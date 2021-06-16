@@ -1,6 +1,6 @@
 {
   "name": "@amboss-mededu/amboss-annotate",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "DOM annotation",
   "author": "Alex Jeffcott",
   "license": "ISC",
@@ -15,7 +15,9 @@
   "workspaces": [
     "./packages/*"
   ],
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "main": "./dist/amboss-annotate.umd.js",
   "module": "./dist/amboss-annotate.es.js",
   "exports": {
