@@ -1,5 +1,4 @@
 import throttle from "lodash.throttle";
-import memoize from "fast-memoize";
 
 function isTextNodeInViewport(n, range) {
   const r = range.getBoundingClientRect();
@@ -154,15 +153,6 @@ const filterTermsByText = (terms, text) => {
   return terms;
 };
 
-export const getPhrasio = memoize(async (locale, id) => {
-  const phrasio = await window.adaptor({
-    subject: "getTooltipContent",
-    locale,
-    id,
-  });
-  return phrasio;
-});
-
 export const getTerms = (locale) => {
   if (locale === "us" || locale === "de") {
     return window
@@ -181,13 +171,6 @@ export const getTerms = (locale) => {
   }
 };
 
-export function getTranslation(id) {
-  return window.adaptor({
-    subject: "getTranslation",
-    id,
-  });
-}
-
 export function track(name, args) {
   return window.adaptor({
     subject: "track",
@@ -202,22 +185,13 @@ export function getTextFromVisibleTextNodes() {
     .toUpperCase();
 }
 
-export function getAllTextFromPage() {
-  let text = document.documentElement.innerText;
-  // el.innerText seems to return '' for shadowdom
-  Array.from(document.getElementsByTagName("amboss-anchor")).forEach(
-    (el) => (text += ` ${el.textContent}`)
-  );
-  return text.replaceAll("/", " ").toUpperCase();
-}
-
-export const getTermsFromText = memoize((locale, allText) => {
+export const getTermsFromText = (locale, allText) => {
   if (!window.adaptor) return [];
   if (!allText || (locale !== "us" && locale !== "de")) return;
   if (!locale) throw new Error("getTermsFromText");
 
   return getTerms(locale).then((res) => filterTermsByText(res, allText));
-});
+};
 
 export function wrapTextContainingTerms(
   termsForPage,
