@@ -40,15 +40,15 @@ function setupMutationObserver(rootNode, annotateCB) {
 }
 
 async function annotate({
-                                      adaptor,
-                                      annotationVariant,
-                                      theme,
-                                      locale,
-                                      shouldAnnotate,
-                                      token,
-                                      campaign,
-                                      customBranding,
-                                    }) {
+  adaptor,
+  annotationVariant,
+  theme,
+  locale,
+  shouldAnnotate,
+  token,
+  campaign,
+  customBranding,
+}) {
   window.adaptor = (message) => adaptor(message, locale, token);
 
   if (annotationVariant === "none" || !shouldAnnotate) return;
