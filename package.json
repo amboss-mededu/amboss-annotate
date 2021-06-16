@@ -15,7 +15,9 @@
   "workspaces": [
     "./packages/*"
   ],
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "main": "./dist/amboss-annotate.umd.js",
   "module": "./dist/amboss-annotate.es.js",
   "exports": {
