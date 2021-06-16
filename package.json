@@ -4,6 +4,7 @@
   "description": "DOM annotation",
   "author": "Alex Jeffcott",
   "license": "ISC",
+  "lockfileVerion": 1,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/amboss-mededu/amboss-annotate.git"
