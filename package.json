@@ -13,9 +13,6 @@
     "url": "https://github.com/amboss-mededu/amboss-annotate/issues"
   },
   "homepage": "https://github.com/amboss-mededu/amboss-annotate#readme",
-  "workspaces": [
-    "./packages/*"
-  ],
   "files": [
     "dist"
   ],

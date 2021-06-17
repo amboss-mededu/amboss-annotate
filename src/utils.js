@@ -202,6 +202,8 @@ export function wrapTextContainingTerms(
   customBranding,
   allVisibleTextNodes = getAllVisibleTextNodes()
 ) {
+  console.log(`!!`, {termsForPage, locale, annotationVariant, theme, campaign, customBranding, allVisibleTextNodes})
+
   if (!termsForPage || !locale || !annotationVariant || !allVisibleTextNodes)
     throw new Error("wrapTextContainingTerms");
 
