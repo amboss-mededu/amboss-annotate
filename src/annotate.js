@@ -48,8 +48,9 @@ async function annotate({
   token,
   campaign,
   customBranding,
+  languages
 }) {
-  window.adaptor = (message) => adaptor(message, locale, token);
+  window.adaptor = (message) => adaptor(message, locale, languages, token);
 
   if (annotationVariant === "none" || !shouldAnnotate) return;
   if (!annotationVariant || !locale) throw new Error("annotate");

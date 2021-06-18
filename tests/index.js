@@ -49,6 +49,15 @@ const annotationOpts = {
     campaign: '123890',
     token: '1234567890',
     customBranding: 'no',
+    languages: {
+        en: true,
+        de: true,
+        es: false,
+        it: false,
+        pt: false,
+        fr: false,
+        pl: false,
+    },
     ...opts,
     adaptorMethods: {
         ...adaptorMethods,

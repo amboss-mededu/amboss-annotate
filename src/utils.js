@@ -153,22 +153,16 @@ const filterTermsByText = (terms, text) => {
   return terms;
 };
 
-export const getTerms = (locale) => {
-  if (locale === "us" || locale === "de") {
+export const getTerms = () => {
     return window
       .adaptor({
-        subject: "getTerms",
-        locale,
+        subject: "getTerms"
       })
       .then((res) => {
         return res;
       })
       .then((res) => new Map(Object.entries(res)));
     // you cannot get a map via the background script so get the array of tuples and create the map here
-  } else {
-    console.error("getTerms locale arg is :", locale);
-    return undefined;
-  }
 };
 
 export function track(name, args) {
