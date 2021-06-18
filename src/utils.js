@@ -161,7 +161,7 @@ export const getTerms = () => {
       .then((res) => {
         return res;
       })
-      .then((res) => new Map(Object.entries(res)));
+      // .then((res) => new Map(Object.entries(res)));
     // you cannot get a map via the background script so get the array of tuples and create the map here
 };
 
@@ -179,12 +179,10 @@ export function getTextFromVisibleTextNodes() {
     .toUpperCase();
 }
 
-export const getTermsFromText = (locale, allText) => {
+export const getTermsFromText = (allText) => {
   if (!window.adaptor) return [];
-  if (!allText || (locale !== "us" && locale !== "de")) return;
-  if (!locale) throw new Error("getTermsFromText");
 
-  return getTerms(locale).then((res) => filterTermsByText(res, allText));
+  return getTerms().then((res) => filterTermsByText(res, allText));
 };
 
 export function wrapTextContainingTerms({

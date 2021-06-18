@@ -68,7 +68,7 @@ async function annotate({
     async () => {
       allText = await getTextFromVisibleTextNodes();
       wordcount = allText.length;
-      allTermsForWholePage = await getTermsFromText(locale, allText);
+      allTermsForWholePage = await getTermsFromText(allText);
       await wrapTextContainingTerms({
         termsForPage: allTermsForWholePage,
         locale,
@@ -88,7 +88,7 @@ async function annotate({
     wordcount = allText.length;
     if (wordcount > 500) {
       if (prev !== wordcount) {
-        allTermsForWholePage = await getTermsFromText(locale, allText);
+        allTermsForWholePage = await getTermsFromText(allText);
         await wrapTextContainingTerms({
           termsForPage: allTermsForWholePage,
           locale,
@@ -110,7 +110,7 @@ async function annotate({
   // setup scroll observer
   scrollThrottle(mutationObserver, async (req) => {
     allText = await getTextFromVisibleTextNodes();
-    allTermsForWholePage = await getTermsFromText(locale, allText);
+    allTermsForWholePage = await getTermsFromText(allText);
     await wrapTextContainingTerms({
       termsForPage: allTermsForWholePage,
       locale,
