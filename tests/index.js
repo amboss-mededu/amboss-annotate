@@ -1,8 +1,17 @@
-import {AmbossPhrasio} from '@amboss-mededu/amboss-phrasio'
 import {AmbossAnchor, annotate} from '../src'
 import mockTermsEn from './mocks/terms_us_en.json'
 import mockTermsDe from './mocks/terms_de_de.json'
 import {mockPhrasioDe, mockPhrasioEn} from './mocks'
+
+class AmbossPhrasio extends HTMLElement {
+    constructor() {
+        super();
+        this.attachShadow({ mode: "open" });
+    }
+    connectedCallback() {
+        this.shadowRoot.innerHTML = `<div style="background-color: lightgrey">I am a placeholder!!!</div>`
+    }
+}
 
 window.customElements.define('amboss-annotation-content', AmbossPhrasio)
 window.customElements.define('amboss-anchor', AmbossAnchor)
