@@ -193,16 +193,17 @@ export const getTermsFromText = (locale, allText) => {
   return getTerms(locale).then((res) => filterTermsByText(res, allText));
 };
 
-export function wrapTextContainingTerms(
-  termsForPage,
-  locale,
-  annotationVariant,
-  theme,
-  campaign,
-  customBranding,
-  allVisibleTextNodes = getAllVisibleTextNodes()
-) {
-  console.log(`!!`, {termsForPage, locale, annotationVariant, theme, campaign, customBranding, allVisibleTextNodes})
+export function wrapTextContainingTerms({
+                                          termsForPage,
+                                          locale,
+                                          annotationVariant,
+                                          theme,
+                                          campaign,
+                                          customBranding,
+                                          allVisibleTextNodes = getAllVisibleTextNodes()
+                                        }) {
+
+  console.log(`!!`, {termsForPage,locale,annotationVariant,allVisibleTextNodes })
 
   if (!termsForPage || !locale || !annotationVariant || !allVisibleTextNodes)
     throw new Error("wrapTextContainingTerms");

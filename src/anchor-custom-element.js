@@ -67,7 +67,6 @@ class Anchor extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    this.render = this.render.bind(this);
     this.create = this.create.bind(this);
     this.open = this.open.bind(this);
     this.t = this.t.bind(this);
@@ -75,7 +74,7 @@ class Anchor extends HTMLElement {
     this.close = this.close.bind(this);
     this.destroy = this.destroy.bind(this);
     this.popperInstance = null;
-    this.content = document.querySelector("amboss-content");
+    this.content = document.querySelector("amboss-annotation-content");
     this.target = document.createElement("span");
   }
 
@@ -101,13 +100,12 @@ class Anchor extends HTMLElement {
       console.warn("!! this.content is falsey => ", this.content);
       return;
     }
-
-    this.target.innerText = this.childNodes[0].textContent;
-    this.shadowRoot.appendChild(this.target);
+    this.target.innerText = this.childNodes[0].textContent
+    this.shadowRoot.appendChild(this.target)
 
     if (this.content === null) {
       console.error(
-        "this.content is null. You may need to create the <amboss-content /> element in the dom"
+        "this.content is null. You may need to create the <amboss-annotation-content /> element in the dom"
       );
     }
 

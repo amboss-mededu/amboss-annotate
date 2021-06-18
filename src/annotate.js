@@ -20,7 +20,7 @@ function setupMutationObserver(rootNode, annotateCB) {
 
       if (
         mutation.type === "attributes" &&
-        mutation.target.nodeName !== "AMBOSS-CONTENT"
+        mutation.target.nodeName !== "amboss-annotation-content"
       ) {
         annotateCB();
       }
@@ -56,8 +56,8 @@ async function annotate({
 
   let allText, wordcount, allTermsForWholePage;
 
-  if (!document.getElementsByTagName("amboss-content").length) {
-    const content = document.createElement("amboss-content");
+  if (!document.getElementsByTagName("amboss-annotation-content").length) {
+    const content = document.createElement("amboss-annotation-content");
     document.body.appendChild(content);
   }
 
@@ -68,14 +68,14 @@ async function annotate({
       allText = await getTextFromVisibleTextNodes();
       wordcount = allText.length;
       allTermsForWholePage = await getTermsFromText(locale, allText);
-      await wrapTextContainingTerms(
-        allTermsForWholePage,
+      await wrapTextContainingTerms({
+        termsForPage: allTermsForWholePage,
         locale,
         annotationVariant,
         theme,
         campaign,
         customBranding
-      );
+    });
     }
   );
 
@@ -88,14 +88,14 @@ async function annotate({
     if (wordcount > 500) {
       if (prev !== wordcount) {
         allTermsForWholePage = await getTermsFromText(locale, allText);
-        await wrapTextContainingTerms(
-          allTermsForWholePage,
+        await wrapTextContainingTerms({
+          termsForPage: allTermsForWholePage,
           locale,
           annotationVariant,
           theme,
           campaign,
           customBranding
-        );
+        });
       } else {
         setTimeout(() => {
           mutationObserver.observe(rootNode, mutationConfig);
@@ -110,14 +110,14 @@ async function annotate({
   scrollThrottle(mutationObserver, async (req) => {
     allText = await getTextFromVisibleTextNodes();
     allTermsForWholePage = await getTermsFromText(locale, allText);
-    await wrapTextContainingTerms(
-      allTermsForWholePage,
+    await wrapTextContainingTerms({
+      termsForPage: allTermsForWholePage,
       locale,
       annotationVariant,
       theme,
       campaign,
       customBranding
-    );
+  });
     wordcount = allText.length;
     window.cancelAnimationFrame(req);
     mutationObserver.observe(rootNode, mutationConfig);
