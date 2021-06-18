@@ -158,9 +158,9 @@ export const getTerms = () => {
       .adaptor({
         subject: "getTerms"
       })
-      .then((res) => {
-        return res;
-      })
+      // .then((res) => {
+      //   return res;
+      // })
       // .then((res) => new Map(Object.entries(res)));
     // you cannot get a map via the background script so get the array of tuples and create the map here
 };
@@ -180,9 +180,9 @@ export function getTextFromVisibleTextNodes() {
 }
 
 export const getTermsFromText = (allText) => {
-  if (!window.adaptor) return [];
+  // if (!window.adaptor) return [];
 
-  return getTerms().then((res) => filterTermsByText(res, allText));
+  return getTerms().then((res) => new Map(Object.entries(res))).then((res) => filterTermsByText(res, allText));
 };
 
 export function wrapTextContainingTerms({
@@ -195,14 +195,12 @@ export function wrapTextContainingTerms({
                                           allVisibleTextNodes = getAllVisibleTextNodes()
                                         }) {
 
-  console.log(`!!`, {termsForPage,locale,annotationVariant,allVisibleTextNodes })
-
   if (!termsForPage || !locale || !annotationVariant || !allVisibleTextNodes)
     throw new Error("wrapTextContainingTerms");
 
   termsForPage.forEach((k, v) => {
     const matcher =
-      locale === "en"
+      locale === "us"
         ? new RegExp(`(?<=^|[\\n "/])(${v})(s|es|'s)?(?=$|[\\n /,.:;"])`, "gi")
         : new RegExp(`(?<=^|[\\n "/])(${v})(?=$|[\\n /,.:;"])`, "gi");
 
