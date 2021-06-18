@@ -1,3 +1,3 @@
-import annotate from "./annotate";
+import { annotate, getPhrasiosFromText } from "./annotate";
 import AmbossAnchor from "./anchor-custom-element";
-export { annotate, AmbossAnchor };
+export { annotate, AmbossAnchor, getPhrasiosFromText };

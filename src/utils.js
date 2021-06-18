@@ -223,3 +223,11 @@ export function wrapTextContainingTerms({
     });
   });
 }
+
+export function getAllTextFromPage() {
+  let text = document.documentElement.innerText.replace(/\d\d:\d\d:\d\d/, '')
+  // el.innerText seems to return '' for shadowdom
+  Array.from(document.getElementsByTagName('AMBOSS-ANCHOR')).forEach((el) => (text += ` ${el.textContent}`))
+  return text.replaceAll('/', ' ').toUpperCase()
+}
+

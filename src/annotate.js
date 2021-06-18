@@ -3,6 +3,7 @@ import {
   scrollThrottle,
   getTermsFromText,
   getTextFromVisibleTextNodes,
+  getAllTextFromPage
 } from "./utils";
 
 function setupMutationObserver(rootNode, annotateCB) {
@@ -39,7 +40,7 @@ function setupMutationObserver(rootNode, annotateCB) {
   return { mutationObserver, rootNode, mutationConfig };
 }
 
-async function annotate({
+export async function annotate({
   adaptor,
   annotationVariant,
   theme,
@@ -127,4 +128,13 @@ async function annotate({
   return undefined;
 }
 
-export default annotate;
+export async function getPhrasiosFromText(
+  text = getAllTextFromPage(),
+  termsInText = getTermsFromText(text)
+) {
+  if (!termsInText) return []
+
+  return await termsInText.then((res) =>
+    Promise.all([...new Set(res.values())].filter(Boolean))
+  )
+}

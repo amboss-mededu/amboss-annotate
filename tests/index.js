@@ -80,6 +80,5 @@ const adaptor = async (message, locale, token) => {
             throw new Error('Message requires message.subject')
     }
 }
-console.log(`!!`, {...annotationOpts, adaptor})
 annotate({...annotationOpts, adaptor})
 
