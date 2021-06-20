@@ -65,19 +65,19 @@ const annotationOpts = {
     },
 }
 
-const adaptor = async ({ message, locale, token }) => {
-    switch (message.subject) {
+const adaptor = async ({ subject, locale, token, trackingProperties, id }) => {
+    switch (subject) {
         case 'track': {
-            return annotationOpts.adaptorMethods.track(message.trackingProperties)
+            return annotationOpts.adaptorMethods.track(trackingProperties)
         }
         case 'getTerms': {
             return annotationOpts.adaptorMethods.getTerms(locale, token)
         }
         case 'getTooltipContent': {
-            return annotationOpts.adaptorMethods.getTooltipContent(locale, token, message.id)
+            return annotationOpts.adaptorMethods.getTooltipContent(locale, token, id)
         }
         default:
-            throw new Error('Message requires message.subject')
+            throw new Error('Message requires subject')
     }
 }
 annotate({...annotationOpts, adaptor})
