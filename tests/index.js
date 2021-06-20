@@ -65,7 +65,7 @@ const annotationOpts = {
     },
 }
 
-const adaptor = async (message, locale, token) => {
+const adaptor = async ({ message, locale, token }) => {
     switch (message.subject) {
         case 'track': {
             return annotationOpts.adaptorMethods.track(message.trackingProperties)
