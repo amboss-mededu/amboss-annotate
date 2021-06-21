@@ -80,5 +80,7 @@ const adaptor = async ({ subject, locale, token, trackingProperties, id }) => {
             throw new Error('Message requires subject')
     }
 }
-annotate({...annotationOpts, adaptor})
+
+window.adaptor = (message) => adaptor({ ...message, ...annotationOpts });
+annotate(annotationOpts)
 

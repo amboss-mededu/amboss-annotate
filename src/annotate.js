@@ -41,18 +41,13 @@ function setupMutationObserver(rootNode, annotateCB) {
 }
 
 export async function annotate({
-  adaptor,
   annotationVariant,
   theme,
   locale,
   shouldAnnotate,
-  token,
   campaign,
   customBranding,
-  languages
 }) {
-  window.adaptor = (message) => adaptor({ ...message, locale, languages, token });
-
   if (annotationVariant === "none" || !shouldAnnotate) return;
   if (!annotationVariant || !locale) throw new Error("annotate");
 
