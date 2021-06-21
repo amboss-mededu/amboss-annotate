@@ -22,10 +22,11 @@ function getPopperOptions(arrow) {
         },
       },
       {
-        name: "flip",
+        name: 'flip',
         enabled: true,
         options: {
-          rootBoundary: "viewport",
+          allowedAutoPlacements: ['top', 'bottom'],
+          rootBoundary: 'viewport',
         },
       },
       {
