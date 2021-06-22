@@ -65,6 +65,10 @@ class Anchor extends HTMLElement {
     return this.getAttribute("data-custom-branding");
   }
 
+  get withLinks() {
+    return this.getAttribute("data-with-links");
+  }
+
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
@@ -76,6 +80,15 @@ class Anchor extends HTMLElement {
     this.destroy = this.destroy.bind(this);
     this.popperInstance = null;
     this.content = document.querySelector("amboss-annotation-content");
+    // if (!this.content.querySelector('#amboss-annotation-arrow')) {
+    //   this.arrow = document.createElement('div')
+    //   const buffer = document.createElement('div')
+    //   this.arrow.id = 'amboss-annotation-arrow'
+    //   this.arrow.setAttribute('data-popper-arrow', '')
+    //   buffer.id = 'buffer'
+    //   this.arrow.appendChild(buffer)
+    //   this.content.prepend(this.arrow)
+    // }
     this.target = document.createElement("span");
   }
 
@@ -140,7 +153,7 @@ class Anchor extends HTMLElement {
   }
 
   create() {
-    const arrow = this.content.shadowRoot.querySelector("#arrow");
+    const arrow = this.content.shadowRoot.querySelector('#amboss-annotation-arrow')
     this.popperInstance = createPopper(
       this.target,
       this.content,
@@ -168,6 +181,7 @@ class Anchor extends HTMLElement {
     this.content.setAttribute("data-theme", this.theme);
     this.content.setAttribute("data-campaign", this.campaign);
     this.content.setAttribute("data-custom-branding", this.customBranding);
+    this.content.setAttribute("data-with-links", this.withLinks);
     this.content.setAttribute("show-popper", "");
 
     if (this.popperInstance !== null) this.destroy();
