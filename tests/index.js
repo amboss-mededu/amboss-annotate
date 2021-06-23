@@ -1,9 +1,21 @@
 import {AmbossAnchor, annotate} from '../src'
-import {AmbossPhrasio} from '@amboss-mededu/amboss-phrasio'
+// import {AmbossPhrasio} from '@amboss-mededu/amboss-phrasio'
 import mockTermsEn from './mocks/terms_us_en.json'
 import mockTermsDe from './mocks/terms_de_de.json'
 import {mockPhrasioDe, mockPhrasioEn} from './mocks'
 const BASE_URL_NEXT = 'https://next.amboss.com/'
+
+class AmbossPhrasio extends HTMLElement {
+    constructor() {
+        super();
+        this.attachShadow({ mode: "open" });
+    }
+    connectedCallback() {
+        this.shadowRoot.innerHTML = `<div id="amboss-annotation-arrow" data-popper-arrow>
+            <div id="buffer"></div>
+          </div><div style="background-color: lightgrey">I am a placeholder!!!</div>`
+    }
+}
 
 window.customElements.define('amboss-annotation-content', AmbossPhrasio)
 window.customElements.define('amboss-anchor', AmbossAnchor)
