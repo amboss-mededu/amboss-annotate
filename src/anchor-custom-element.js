@@ -80,6 +80,7 @@ class Anchor extends HTMLElement {
     this.destroy = this.destroy.bind(this);
     this.popperInstance = null;
     this.content = document.querySelector("amboss-annotation-content");
+    this.arrow = this.content.shadowRoot.querySelector('#amboss-annotation-arrow')
     // if (!this.content.querySelector('#amboss-annotation-arrow')) {
     //   this.arrow = document.createElement('div')
     //   const buffer = document.createElement('div')
@@ -106,6 +107,7 @@ class Anchor extends HTMLElement {
   }
 
   render() {
+
     if (!this.hasChildNodes()) {
       console.warn("!! this.hasChildNodes is falsey");
       return;
@@ -153,11 +155,12 @@ class Anchor extends HTMLElement {
   }
 
   create() {
-    const arrow = this.content.shadowRoot.querySelector('#amboss-annotation-arrow')
+    console.log(`!!`, this.content)
+    console.log(`!!`, this.arrow)
     this.popperInstance = createPopper(
       this.target,
       this.content,
-      getPopperOptions(arrow)
+      getPopperOptions(this.arrow)
     );
   }
 
@@ -172,6 +175,8 @@ class Anchor extends HTMLElement {
   }
 
   open() {
+    if (this.content === null) this.content = document.querySelector("amboss-annotation-content");
+    if (this.arrow === null) this.arrow = this.content.shadowRoot.querySelector('#amboss-annotation-arrow')
     this.content.setAttribute("data-phrasio-id", this.phrasioId);
     this.content.setAttribute("data-locale", this.locale);
     this.content.setAttribute(
