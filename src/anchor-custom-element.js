@@ -205,7 +205,7 @@ class Anchor extends HTMLElement {
       if (!this.content.hasAttribute("show-popper")) {
         this.destroy();
       }
-    }, 50);
+    }, 20);
   }
 
   destroy() {
