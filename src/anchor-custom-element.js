@@ -185,11 +185,11 @@ class Anchor extends HTMLElement {
       "data-annotation-variant",
       this.annotationVariant
     );
+    this.content.setAttribute("data-variant", this.variant);
     this.content.setAttribute("data-theme", this.theme);
     this.content.setAttribute("data-campaign", this.campaign);
     this.content.setAttribute("data-custom-branding", this.customBranding);
     this.content.setAttribute("data-with-links", this.withLinks);
-    this.content.setAttribute("data-variant", this.variant);
     this.content.setAttribute("show-popper", "");
 
     if (this.popperInstance !== null) this.destroy();
