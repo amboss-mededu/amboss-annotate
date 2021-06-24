@@ -111,7 +111,6 @@ class Anchor extends HTMLElement {
   }
 
   render() {
-
     if (!this.hasChildNodes()) {
       console.warn("!! this.hasChildNodes is falsey");
       return;
@@ -159,6 +158,8 @@ class Anchor extends HTMLElement {
   }
 
   create() {
+    if (this.content === null) this.content = document.querySelector("amboss-annotation-content");
+    if (this.arrow === null) this.arrow = this.content.shadowRoot.querySelector('#amboss-annotation-arrow')
     this.popperInstance = createPopper(
       this.target,
       this.content,
@@ -205,12 +206,11 @@ class Anchor extends HTMLElement {
       if (!this.content.hasAttribute("show-popper")) {
         this.destroy();
       }
-    }, 20);
+    }, 100);
   }
 
   destroy() {
     if (this.popperInstance !== null) {
-      this.content.setAttribute("data-phrasio-id", '');
       this.popperInstance.destroy();
       this.popperInstance = null;
     }
