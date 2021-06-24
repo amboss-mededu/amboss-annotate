@@ -205,11 +205,12 @@ class Anchor extends HTMLElement {
       if (!this.content.hasAttribute("show-popper")) {
         this.destroy();
       }
-    }, 100);
+    }, 50);
   }
 
   destroy() {
     if (this.popperInstance !== null) {
+      this.content.setAttribute("data-phrasio-id", '');
       this.popperInstance.destroy();
       this.popperInstance = null;
     }
