@@ -77,7 +77,7 @@ const annotationOpts = {
     },
 }
 
-const adaptor = async ({ subject, locale, token, trackingProperties, id, hrefProperties }) => {
+const adaptor = async ({ subject, locale, token, trackingProperties, id }) => {
     switch (subject) {
         case 'track': {
             return annotationOpts.adaptorMethods.track(trackingProperties)
@@ -87,9 +87,6 @@ const adaptor = async ({ subject, locale, token, trackingProperties, id, hrefPro
         }
         case 'getTooltipContent': {
             return annotationOpts.adaptorMethods.getTooltipContent(locale, token, id)
-        }
-        case 'generateHref': {
-            return annotationOpts.adaptorMethods.generateHref({...hrefProperties, locale})
         }
         default:
             throw new Error('Message requires subject')

@@ -69,6 +69,10 @@ class Anchor extends HTMLElement {
     return this.getAttribute("data-with-links");
   }
 
+  get variant() {
+    return this.getAttribute("data-variant");
+  }
+
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
@@ -155,8 +159,6 @@ class Anchor extends HTMLElement {
   }
 
   create() {
-    console.log(`!!`, this.content)
-    console.log(`!!`, this.arrow)
     this.popperInstance = createPopper(
       this.target,
       this.content,
@@ -187,6 +189,7 @@ class Anchor extends HTMLElement {
     this.content.setAttribute("data-campaign", this.campaign);
     this.content.setAttribute("data-custom-branding", this.customBranding);
     this.content.setAttribute("data-with-links", this.withLinks);
+    this.variant.setAttribute("data-variant", this.variant);
     this.content.setAttribute("show-popper", "");
 
     if (this.popperInstance !== null) this.destroy();

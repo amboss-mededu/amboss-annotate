@@ -123,6 +123,7 @@ function wrapTextNode(
     anchor.setAttribute("data-theme", theme);
     anchor.setAttribute("data-campaign", campaign);
     anchor.setAttribute("data-custom-branding", customBranding);
+    anchor.setAttribute("data-variant", 'tooltip');
     anchor.appendChild(doc.createTextNode(hits[0]));
 
     // insert amboss-anchor before the next sibling of the text node
