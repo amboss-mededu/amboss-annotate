@@ -1,5 +1,11 @@
 import throttle from "lodash.throttle";
 
+export const getPhrasio = (id) =>
+  window.adaptor({
+    subject: "getTooltipContent",
+    id,
+  });
+
 function isTextNodeInViewport(n, range) {
   const r = range.getBoundingClientRect();
   return (
