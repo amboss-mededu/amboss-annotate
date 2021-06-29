@@ -88,7 +88,7 @@ class Anchor extends HTMLElement {
     const styleElem = document.createElement("style");
     styleElem.innerText = styles;
     this.shadowRoot.appendChild(styleElem);
-    // this.render();
+    this.render();
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
