@@ -69,10 +69,6 @@ class Anchor extends HTMLElement {
     return this.getAttribute("data-with-links");
   }
 
-  get variant() {
-    return this.getAttribute("data-variant");
-  }
-
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
@@ -85,15 +81,6 @@ class Anchor extends HTMLElement {
     this.popperInstance = null;
     this.content = document.querySelector("amboss-annotation-content");
     this.arrow = this.content.shadowRoot.querySelector('#amboss-annotation-arrow')
-    // if (!this.content.querySelector('#amboss-annotation-arrow')) {
-    //   this.arrow = document.createElement('div')
-    //   const buffer = document.createElement('div')
-    //   this.arrow.id = 'amboss-annotation-arrow'
-    //   this.arrow.setAttribute('data-popper-arrow', '')
-    //   buffer.id = 'buffer'
-    //   this.arrow.appendChild(buffer)
-    //   this.content.prepend(this.arrow)
-    // }
     this.target = document.createElement("span");
   }
 
@@ -101,7 +88,7 @@ class Anchor extends HTMLElement {
     const styleElem = document.createElement("style");
     styleElem.innerText = styles;
     this.shadowRoot.appendChild(styleElem);
-    this.render();
+    // this.render();
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -180,17 +167,9 @@ class Anchor extends HTMLElement {
   open() {
     if (this.content === null) this.content = document.querySelector("amboss-annotation-content");
     if (this.arrow === null) this.arrow = this.content.shadowRoot.querySelector('#amboss-annotation-arrow')
-    // getPhrasio(this.phrasioId).then((res) => {
-    //   const { phrasioId, title, subtitle, body, destinations=[], media=[] } = res || {};
       this.content.setAttribute("data-phrasio-id", this.phrasioId);
-      // this.content.setAttribute("data-title", title);
-      // this.content.setAttribute("data-subtitle", subtitle);
-      // this.content.setAttribute("data-body", body);
-      // this.content.setAttribute("data-destinations", JSON.stringify(destinations));
-      // this.content.setAttribute("data-media", JSON.stringify(media));
       this.content.setAttribute("data-locale", this.locale);
       this.content.setAttribute("data-annotation-variant", this.annotationVariant);
-      this.content.setAttribute("data-variant", this.variant);
       this.content.setAttribute("data-theme", this.theme);
       this.content.setAttribute("data-campaign", this.campaign);
       this.content.setAttribute("data-custom-branding", this.customBranding);
@@ -202,7 +181,6 @@ class Anchor extends HTMLElement {
       this.popperInstance.forceUpdate();
 
       this.t();
-    // })
   }
 
   close() {
