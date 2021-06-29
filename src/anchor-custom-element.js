@@ -1,5 +1,5 @@
 import { createPopper } from "@popperjs/core";
-import { track, getPhrasio } from "./utils";
+import { track } from "./utils";
 import { tooltip_anchor_hovered } from "./event-names";
 import styles from "./anchor-custom-element.css";
 
@@ -180,14 +180,14 @@ class Anchor extends HTMLElement {
   open() {
     if (this.content === null) this.content = document.querySelector("amboss-annotation-content");
     if (this.arrow === null) this.arrow = this.content.shadowRoot.querySelector('#amboss-annotation-arrow')
-    getPhrasio(this.phrasioId).then((res) => {
-      const { phrasioId, title, subtitle, body, destinations=[], media=[] } = res || {};
+    // getPhrasio(this.phrasioId).then((res) => {
+    //   const { phrasioId, title, subtitle, body, destinations=[], media=[] } = res || {};
       this.content.setAttribute("data-phrasio-id", this.phrasioId);
-      this.content.setAttribute("data-title", title);
-      this.content.setAttribute("data-subtitle", subtitle);
-      this.content.setAttribute("data-body", body);
-      this.content.setAttribute("data-destinations", JSON.stringify(destinations));
-      this.content.setAttribute("data-media", JSON.stringify(media));
+      // this.content.setAttribute("data-title", title);
+      // this.content.setAttribute("data-subtitle", subtitle);
+      // this.content.setAttribute("data-body", body);
+      // this.content.setAttribute("data-destinations", JSON.stringify(destinations));
+      // this.content.setAttribute("data-media", JSON.stringify(media));
       this.content.setAttribute("data-locale", this.locale);
       this.content.setAttribute("data-annotation-variant", this.annotationVariant);
       this.content.setAttribute("data-variant", this.variant);
@@ -202,7 +202,7 @@ class Anchor extends HTMLElement {
       this.popperInstance.forceUpdate();
 
       this.t();
-    })
+    // })
   }
 
   close() {
