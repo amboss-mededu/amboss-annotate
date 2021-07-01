@@ -40,8 +40,6 @@ export function scrollThrottle(mutObs, cb) {
 }
 
 function getAllVisibleTextNodes(n = document.body) {
-  // console.count('getAllVisibleTextNodes')
-
   // setup range variable to use in walkerFilter
   const range = document.createRange();
 
@@ -53,7 +51,7 @@ function getAllVisibleTextNodes(n = document.body) {
 
   function walkerFilter(node) {
     range.selectNode(node);
-
+    console.log(`!!`, node.parentNode.tagName)
     const a = isTextNodeInViewport(node, range);
     const b = !nodeReg.test(node.parentNode.tagName);
     const c = !elReg.test(node.parentElement.tagName);
