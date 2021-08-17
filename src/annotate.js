@@ -21,7 +21,7 @@ function setupMutationObserver(rootNode, annotateCB) {
 
       if (
         mutation.type === "attributes" &&
-        mutation.target.nodeName !== "amboss-annotation-content"
+        mutation.target.nodeName !== "amboss-content-card"
       ) {
         annotateCB();
       }
@@ -53,8 +53,8 @@ export async function annotate({
 
   let allText, wordcount, allTermsForWholePage;
 
-  if (!document.getElementsByTagName("amboss-annotation-content").length) {
-    const content = document.createElement("amboss-annotation-content");
+  if (!document.getElementsByTagName("amboss-content-card").length) {
+    const content = document.createElement("amboss-content-card");
     document.body.appendChild(content);
   }
 

@@ -41,8 +41,8 @@ function getPopperOptions(arrow) {
 }
 
 class Anchor extends HTMLElement {
-  get phrasioId() {
-    return this.getAttribute("data-phrasio-id");
+  get contentId() {
+    return this.getAttribute("data-content-id");
   }
 
   get locale() {
@@ -79,8 +79,8 @@ class Anchor extends HTMLElement {
     this.close = this.close.bind(this);
     this.destroy = this.destroy.bind(this);
     this.popperInstance = null;
-    this.content = document.querySelector("amboss-annotation-content");
-    this.arrow = this.content.shadowRoot.querySelector('#amboss-annotation-arrow')
+    this.content = document.querySelector("amboss-content-card");
+    this.arrow = this.content.shadowRoot.querySelector('#amboss-content-card-arrow')
     this.target = document.createElement("span");
   }
 
@@ -111,7 +111,7 @@ class Anchor extends HTMLElement {
 
     if (this.content === null) {
       console.error(
-        "this.content is null. You may need to create the <amboss-annotation-content /> element in the dom"
+        "this.content is null. You may need to create the <amboss-content-card /> element in the dom"
       );
     }
 
@@ -145,8 +145,8 @@ class Anchor extends HTMLElement {
   }
 
   create() {
-    if (this.content === null) this.content = document.querySelector("amboss-annotation-content");
-    if (this.arrow === null) this.arrow = this.content.shadowRoot.querySelector('#amboss-annotation-arrow')
+    if (this.content === null) this.content = document.querySelector("amboss-content-card");
+    if (this.arrow === null) this.arrow = this.content.shadowRoot.querySelector('#amboss-content-card-arrow')
     this.popperInstance = createPopper(
       this.target,
       this.content,
@@ -160,14 +160,14 @@ class Anchor extends HTMLElement {
 
   t() {
     track(tooltip_anchor_hovered, {
-      phrasioId: this.phrasioId,
+      contentId: this.contentId,
     });
   }
 
   open() {
-    if (this.content === null) this.content = document.querySelector("amboss-annotation-content");
-    if (this.arrow === null) this.arrow = this.content.shadowRoot.querySelector('#amboss-annotation-arrow')
-      this.content.setAttribute("data-phrasio-id", this.phrasioId);
+    if (this.content === null) this.content = document.querySelector("amboss-content-card");
+    if (this.arrow === null) this.arrow = this.content.shadowRoot.querySelector('#amboss-content-card-arrow')
+      this.content.setAttribute("data-content-id", this.contentId);
       this.content.setAttribute("data-locale", this.locale);
       this.content.setAttribute("data-annotation-variant", this.annotationVariant);
       this.content.setAttribute("data-theme", this.theme);

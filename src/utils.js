@@ -51,7 +51,6 @@ function getAllVisibleTextNodes(n = document.body) {
 
   function walkerFilter(node) {
     range.selectNode(node);
-    console.log(`!!`, node.parentNode.tagName)
     const a = isTextNodeInViewport(node, range);
     const b = !nodeReg.test(node.parentNode.tagName);
     const c = !elReg.test(node.parentElement.tagName);
