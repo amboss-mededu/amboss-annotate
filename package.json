@@ -28,7 +28,6 @@
     "registry": "https://npm.pkg.github.com/"
   },
   "scripts": {
-    "test": "wtr **/*.test.js --node-resolve",
     "cy": "cypress open",
     "dev": "vite",
     "build": "vite build",
