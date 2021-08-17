@@ -28,7 +28,8 @@
     "registry": "https://npm.pkg.github.com/"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "wtr **/*.test.js --node-resolve",
+    "cy": "cypress open",
     "dev": "vite",
     "build": "vite build",
     "legacy": "vite build --config vite.config.legacy.ts",
@@ -37,7 +38,9 @@
   "devDependencies": {
     "@types/node": "^15.12.2",
     "@vitejs/plugin-legacy": "^1.4.1",
+    "cypress": "^7.6.0",
     "eslint": "^7.28.0",
+    "http-server": "^0.12.3",
     "regenerator-runtime": "^0.13.7",
     "typescript": "^4.3.2",
     "vite": "^2.3.7"
