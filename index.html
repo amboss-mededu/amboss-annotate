@@ -3,7 +3,6 @@
 <head>
   <meta charset='UTF-8'>
   <title>Test page for AMBOSS annotate</title>
-  <script id="amboss-content-card" type="module" src="./tests/index.js"></script>
 </head>
 <body>
 <h1>Module import</h1>
@@ -53,5 +52,38 @@
     <div class="row-credit-container" data-reactid="610">
   </div></div></div></a></li>
 </ul>
+<script id="amboss-content-card" type="module">
+  // import { annotate, initTooltips, AmbossContentCard, AmbossAnchor } from './dist/amboss-annotate.es'
+  import { annotate, initTooltips, AmbossContentCard, AmbossAnchor } from './src'
+
+  const annotationOpts = {
+    Content: AmbossContentCard,
+    Anchor: AmbossAnchor,
+    shouldAnnotate: true,
+    annotationVariant: 'underline',
+    useGlossary: 'no',
+    theme: 'light-theme',
+    locale: 'us',
+    campaign: '123890',
+    token: '794f2738efab8ed2814d44a638e10a43',
+    customBranding: 'no',
+    languages: {
+      en: true,
+      de: true,
+      es: false,
+      it: false,
+      pt: false,
+      fr: false,
+      pl: false,
+    }
+  }
+
+  if (typeof window !== 'undefined') {
+    window.ambossAnnotation = {};
+    window.ambossAnnotation.track = async (trackingProperties) => console.info('adaptor track', trackingProperties);
+    initTooltips(annotationOpts)
+    annotate(annotationOpts)
+  }
+</script>
 </body>
 </html>
