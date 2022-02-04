@@ -76,11 +76,7 @@ function getAllVisibleTextNodes(n = document.body) {
     }
   }
 
-  const walker = n.ownerDocument.createTreeWalker(
-    n,
-    NodeFilter.SHOW_TEXT,
-    walkerFilter
-  );
+  const walker = n.ownerDocument.createTreeWalker(n, NodeFilter.SHOW_TEXT, walkerFilter);
   const textNodes = [];
 
   while (outside < 50 && walker.nextNode()) {
@@ -91,17 +87,8 @@ function getAllVisibleTextNodes(n = document.body) {
   return textNodes;
 }
 
-function wrapTextNode(
-  node,
-  regex,
-  contentId,
-  annotationVariant,
-  locale,
-  theme,
-  campaign,
-  customBranding
-) {
-  if (!node || !regex || !contentId || !annotationVariant || !locale)
+function wrapTextNode(node, regex, contentId) {
+  if (!node || !regex || !contentId)
     throw new Error("wrapTextNode");
   if (node.parentElement.classList.value.includes("amboss-ignore")) return;
 
@@ -129,12 +116,7 @@ function wrapTextNode(
 
     const anchor = doc.createElement("amboss-anchor");
     anchor.setAttribute("data-content-id", contentId);
-    anchor.setAttribute("data-locale", locale);
-    anchor.setAttribute("data-annotation-variant", annotationVariant);
-    anchor.setAttribute("data-theme", theme);
-    anchor.setAttribute("data-campaign", campaign);
-    anchor.setAttribute("data-custom-branding", customBranding);
-    anchor.setAttribute("data-variant", 'tooltip');
+    anchor.setAttribute("data-annotation-variant", window.ambossAnnotationOptions.annotationVariant);
     anchor.appendChild(doc.createTextNode(hits[0]));
 
     // insert amboss-anchor before the next sibling of the text node
@@ -152,13 +134,6 @@ function wrapTextNode(
   }
 }
 
-export function track(name, args) {
-    return window.ambossAnnotation.track({
-      subject: "track",
-      trackingProperties: [name, args],
-    });
-}
-
 export function getTextFromVisibleTextNodes() {
   return Array.from(getAllVisibleTextNodes())
     .reduce((acc, cur) => acc + cur.textContent + " ", " ")
@@ -169,13 +144,9 @@ export function getTextFromVisibleTextNodes() {
 export function wrapTextContainingTerms({
   termsForPage,
   locale,
-  annotationVariant,
-  theme,
-  campaign,
-  customBranding,
   allVisibleTextNodes = getAllVisibleTextNodes()
 }) {
-  if (!termsForPage || !locale || !annotationVariant || !allVisibleTextNodes)
+  if (!termsForPage || !locale || !allVisibleTextNodes)
     throw new Error("wrapTextContainingTerms");
 
   termsForPage.forEach((k, v) => {
@@ -189,16 +160,7 @@ export function wrapTextContainingTerms({
       if (matcher.test(n.nodeValue)) {
         // https://stackoverflow.com/questions/1520800/why-does-a-regexp-with-global-flag-give-wrong-results
         matcher.lastIndex = 0;
-        wrapTextNode(
-          n,
-          matcher,
-          k,
-          annotationVariant,
-          locale,
-          theme,
-          campaign,
-          customBranding
-        );
+        wrapTextNode(n, matcher, k);
       }
     });
   });

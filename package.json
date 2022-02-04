@@ -28,12 +28,15 @@
     "registry": "https://npm.pkg.github.com/"
   },
   "scripts": {
+    "clean": "rm -rf ./src/phrasios_de.json ./src/phrasios_us.json ./src/terms_de_de.json ./src/terms_us_en.json",
+    "createTermToIdMap": "node createTermToIdMap.mjs",
+    "createIdToPhrasioMap": "node createIdToPhrasioMap.mjs",
+    "createIdToPhrasioMap:empty": "node createIdToPhrasioMapEmpty.mjs",
     "cy": "cypress open",
+    "build:offline": "npm run clean && npm run createTermToIdMap && npm run createIdToPhrasioMap && vite build",
+    "build": "npm run clean && npm run createTermToIdMap && npm run createIdToPhrasioMap:empty && vite build",
     "dev": "vite",
-    "build": "vite build",
-    "legacy": "vite build --config vite.config.legacy.ts",
-    "serve": "vite preview",
-    "createTermToIdMap": "node createTermToIdMap.mjs"
+    "legacy": "vite build --config vite.config.legacy.ts"
   },
   "devDependencies": {
     "@types/node": "^17.0.14",
@@ -47,7 +50,7 @@
     "vite": "^2.7.13"
   },
   "dependencies": {
-    "@amboss-mededu/amboss-phrasio": "^0.0.40",
+    "@amboss-mededu/amboss-phrasio": "^0.0.47",
     "@popperjs/core": "^2.11.2",
     "lodash.throttle": "^4.1.1"
   }

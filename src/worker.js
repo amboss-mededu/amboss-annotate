@@ -21,7 +21,7 @@ const filterTermsByText = (terms, text) => {
 };
 
 const getTermsFromText = (locale, allText) => {
-  return getTerms().then((res) => new Map(Object.entries(res))).then((res) => filterTermsByText(res, allText));
+  return getTerms(locale).then((res) => new Map(Object.entries(res))).then((res) => filterTermsByText(res, allText));
 };
 
 self.onmessage = async function (e) {

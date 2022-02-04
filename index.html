@@ -56,33 +56,29 @@
   // import { annotate, initTooltips, AmbossContentCard, AmbossAnchor } from './dist/amboss-annotate.es'
   import { annotate, initTooltips, AmbossContentCard, AmbossAnchor } from './src'
 
-  const annotationOpts = {
-    Content: AmbossContentCard,
-    Anchor: AmbossAnchor,
-    shouldAnnotate: true,
-    annotationVariant: 'underline',
-    useGlossary: 'no',
-    theme: 'light-theme',
-    locale: 'us',
-    campaign: '123890',
-    token: '794f2738efab8ed2814d44a638e10a43',
-    customBranding: 'no',
-    languages: {
-      en: true,
-      de: true,
-      es: false,
-      it: false,
-      pt: false,
-      fr: false,
-      pl: false,
-    }
-  }
-
   if (typeof window !== 'undefined') {
-    window.ambossAnnotation = {};
-    window.ambossAnnotation.track = async (trackingProperties) => console.info('adaptor track', trackingProperties);
-    initTooltips(annotationOpts)
-    annotate(annotationOpts)
+    window.ambossAnnotationOptions = {
+      Content: AmbossContentCard,
+      Anchor: AmbossAnchor,
+      shouldAnnotate: true,
+      annotationVariant: 'underline',
+      theme: 'light-theme',
+      locale: 'us',
+      campaign: '123890',
+      token: '38692252a8d081f036c686c6e165b284',
+      // token: 'aa95d5a63aa50efe66db3ac5b0309624',
+      offline: false,
+      customBranding: 'no',
+    };
+    window.ambossAnnotationAdaptor = {};
+    // initialise custom elements and methods
+    initTooltips()
+
+    // overwrite methods here
+    window.ambossAnnotationAdaptor.track = async (trackingProperties) => console.info('adaptor track', trackingProperties);
+
+    // call annotation
+    annotate()
   }
 </script>
 </body>

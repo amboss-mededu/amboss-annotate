@@ -1,9 +1,6 @@
 import fetch from 'node-fetch'
 import fs from 'fs'
 
-const regExEN = /^(NAM|ICH|ICD|MET|AI|LANGUAGE|INSIGHT|MEAN|FISH|MEN|STD|SAM|MG|AS|PIP|CHANGELOG|STATISTICS|PREP|STAT|TIP|PRES)$/gi
-const regExDE = /^(MEN)/gi
-
 const onlyWithDescriptions = true
 
 function normaliseData(data, lang) {
@@ -23,25 +20,17 @@ function normaliseData(data, lang) {
     return acc
   }, [])
 }
-
-function createTermListFromData(data, lang) {
-  const regEx = lang === 'en' ? regExEN : regExDE
-
-  return data.reduce((acc, cur) => {
-    const { id, title, synonyms } = cur
-
-    let newCur = {}
-
-    if (!regEx.test(title) && title.length > 3) {
-      newCur = { [title.replace('+', '\\+').toUpperCase()]: id }
+function filterAndObjectifyPhrasios(normalisedData) {
+  return normalisedData.reduce((acc, cur) => {
+    const { id, title, description, etymology, destinations } = cur
+    const newCur = {
+      [id]: {
+        title,
+        etymology,
+        description,
+        destinations,
+      },
     }
-
-    synonyms.forEach((s) => {
-      if (!regEx.test(s) && s.length > 3) {
-        newCur = { ...newCur, [s.replace('+', '\\+').toUpperCase()]: id }
-      }
-    })
-
     return { ...acc, ...newCur }
   }, {})
 }
@@ -57,12 +46,15 @@ languages.forEach((lang) => {
     .then((result) => result.json())
     .then(async (data) => {
       const normalisedData = await normaliseData(data, lang)
-      const termList = await createTermListFromData(normalisedData, lang)
+      const phrasiosFilteredAndObjectified = await filterAndObjectifyPhrasios(normalisedData)
 
-      fs.writeFile(`./src/terms_${lang === 'de' ? 'de' : 'us'}_${lang}.json`, JSON.stringify(termList), (err) =>
-        err
-          ? console.error(`Error writing terms_${lang === 'de' ? 'de' : 'us'}_${lang}`, err)
-          : console.log(`terms_${lang === 'de' ? 'de' : 'us'}_${lang} successfully saved!`)
+      fs.writeFile(
+        `./src/phrasios_${lang === 'de' ? 'de' : 'us'}.json`,
+        JSON.stringify(phrasiosFilteredAndObjectified),
+        (err) =>
+          err
+            ? console.error(`Error writing phrasios_${lang === 'de' ? 'de' : 'us'}`, err)
+            : console.log(`phrasios_${lang === 'de' ? 'de' : 'us'} successfully saved!`)
       )
     })
     .catch(console.error)

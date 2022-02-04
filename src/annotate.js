@@ -7,14 +7,12 @@ import {
 } from "./utils";
 import {setupMutationObserver} from './mutationObserver'
 
-export async function annotate({
-  annotationVariant,
-  theme,
-  locale,
-  shouldAnnotate,
-  campaign,
-  customBranding,
-}) {
+export async function annotate() {
+  const {
+    annotationVariant,
+    locale,
+    shouldAnnotate,
+  } = window.ambossAnnotationOptions
   if (annotationVariant === "none" || !shouldAnnotate) return;
   if (!annotationVariant || !locale) throw new Error("annotate");
 
@@ -35,10 +33,6 @@ export async function annotate({
         wrapTextContainingTerms({
           termsForPage: data,
           locale,
-          annotationVariant,
-          theme,
-          campaign,
-          customBranding,
         })
       });
     }
@@ -56,10 +50,6 @@ export async function annotate({
           wrapTextContainingTerms({
             termsForPage: data,
             locale,
-            annotationVariant,
-            theme,
-            campaign,
-            customBranding
           })
         });
       } else {
@@ -79,10 +69,6 @@ export async function annotate({
     wrapTextContainingTerms({
       termsForPage: data,
       locale,
-      annotationVariant,
-      theme,
-      campaign,
-      customBranding
   });
   });
     wordcount = allText.length;

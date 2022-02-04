@@ -1,5 +1,4 @@
 import { createPopper } from "@popperjs/core";
-import { track } from "./utils";
 import { tooltip_anchor_hovered } from "./event-names";
 import styles from "./anchor-custom-element.css";
 
@@ -43,30 +42,6 @@ function getPopperOptions(arrow) {
 class Anchor extends HTMLElement {
   get contentId() {
     return this.getAttribute("data-content-id");
-  }
-
-  get locale() {
-    return this.getAttribute("data-locale");
-  }
-
-  get annotationVariant() {
-    return this.getAttribute("data-annotation-variant");
-  }
-
-  get theme() {
-    return this.getAttribute("data-theme");
-  }
-
-  get campaign() {
-    return this.getAttribute("data-campaign");
-  }
-
-  get customBranding() {
-    return this.getAttribute("data-custom-branding");
-  }
-
-  get withLinks() {
-    return this.getAttribute("data-with-links");
   }
 
   constructor() {
@@ -156,35 +131,29 @@ class Anchor extends HTMLElement {
 
   keepOpen() {
     this.content.setAttribute("show-popper", "");
+    this.content.setAttribute("data-content-id", this.contentId);
   }
 
   t() {
-    track(tooltip_anchor_hovered, {
+    window.ambossAnnotationAdaptor.track([tooltip_anchor_hovered, {
       contentId: this.contentId,
-    });
+    }]);
   }
 
   open() {
     if (this.content === null) this.content = document.querySelector("amboss-content-card");
-    if (this.arrow === null) this.arrow = this.content.shadowRoot.querySelector('#amboss-content-card-arrow')
-      this.content.setAttribute("data-content-id", this.contentId);
-      this.content.setAttribute("data-locale", this.locale);
-      this.content.setAttribute("data-annotation-variant", this.annotationVariant);
-      this.content.setAttribute("data-theme", this.theme);
-      this.content.setAttribute("data-campaign", this.campaign);
-      this.content.setAttribute("data-custom-branding", this.customBranding);
-      this.content.setAttribute("data-with-links", this.withLinks);
-      this.content.setAttribute("show-popper", "");
-
-      if (this.popperInstance !== null) this.destroy();
-      this.create();
-      this.popperInstance.forceUpdate();
-
-      this.t();
+    if (this.arrow === null) this.arrow = this.content.shadowRoot.querySelector('#amboss-content-card-arrow');
+    this.content.setAttribute("show-popper", "");
+    this.content.setAttribute("data-content-id", this.contentId);
+    if (this.popperInstance !== null) this.destroy();
+    this.create();
+    this.popperInstance.forceUpdate();
+    this.t();
   }
 
   close() {
     this.content.removeAttribute("show-popper");
+    this.content.removeAttribute("data-content-id");
     setTimeout(() => {
       if (!this.content.hasAttribute("show-popper")) {
         this.destroy();
