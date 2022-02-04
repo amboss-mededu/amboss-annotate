@@ -1,57 +1,22 @@
 import {
   wrapTextContainingTerms,
   scrollThrottle,
-  getTermsFromText,
+  getTermsFromTextWithWorker,
   getTextFromVisibleTextNodes,
   getAllTextFromPage
 } from "./utils";
+import {setupMutationObserver} from './mutationObserver'
 
-function setupMutationObserver(rootNode, annotateCB) {
-  function mutationCB(mutations, observer) {
-    for (const mutation of mutations) {
-      if (
-        mutation.type === "childList" &&
-        mutation.addedNodes[0] &&
-        mutation.addedNodes[0].nodeName !== "AMBOSS-ANCHOR" &&
-        mutation.previousSibling &&
-        mutation.previousSibling.nodeName !== "AMBOSS-ANCHOR"
-      ) {
-        annotateCB();
-      }
-
-      if (
-        mutation.type === "attributes" &&
-        mutation.target.nodeName !== "amboss-content-card"
-      ) {
-        annotateCB();
-      }
-    }
-  }
-
-  const mutationObserver = new MutationObserver(mutationCB);
-  const mutationConfig = {
-    attributes: true,
-    attributeFilter: ["style"],
-    childList: true,
-    characterData: false,
-    subtree: true,
-  };
-
-  return { mutationObserver, rootNode, mutationConfig };
-}
-
-export async function annotate({
-  annotationVariant,
-  theme,
-  locale,
-  shouldAnnotate,
-  campaign,
-  customBranding,
-}) {
+export async function annotate() {
+  const {
+    annotationVariant,
+    locale,
+    shouldAnnotate,
+  } = window.ambossAnnotationOptions
   if (annotationVariant === "none" || !shouldAnnotate) return;
   if (!annotationVariant || !locale) throw new Error("annotate");
 
-  let allText, wordcount, allTermsForWholePage;
+  let allText, wordcount;
 
   if (!document.getElementsByTagName("amboss-content-card").length) {
     const content = document.createElement("amboss-content-card");
@@ -64,15 +29,12 @@ export async function annotate({
     async () => {
       allText = await getTextFromVisibleTextNodes();
       wordcount = allText.length;
-      allTermsForWholePage = await getTermsFromText(allText);
-      await wrapTextContainingTerms({
-        termsForPage: allTermsForWholePage,
-        locale,
-        annotationVariant,
-        theme,
-        campaign,
-        customBranding
-    });
+      getTermsFromTextWithWorker(locale, allText, (data) => {
+        wrapTextContainingTerms({
+          termsForPage: data,
+          locale,
+        })
+      });
     }
   );
 
@@ -84,14 +46,11 @@ export async function annotate({
     wordcount = allText.length;
     if (wordcount > 500) {
       if (prev !== wordcount) {
-        allTermsForWholePage = await getTermsFromText(allText);
-        await wrapTextContainingTerms({
-          termsForPage: allTermsForWholePage,
-          locale,
-          annotationVariant,
-          theme,
-          campaign,
-          customBranding
+        getTermsFromTextWithWorker(locale, allText, (data) => {
+          wrapTextContainingTerms({
+            termsForPage: data,
+            locale,
+          })
         });
       } else {
         setTimeout(() => {
@@ -106,14 +65,11 @@ export async function annotate({
   // setup scroll observer
   scrollThrottle(mutationObserver, async (req) => {
     allText = await getTextFromVisibleTextNodes();
-    allTermsForWholePage = await getTermsFromText(allText);
-    await wrapTextContainingTerms({
-      termsForPage: allTermsForWholePage,
+    getTermsFromTextWithWorker(locale, allText, (data) => {
+    wrapTextContainingTerms({
+      termsForPage: data,
       locale,
-      annotationVariant,
-      theme,
-      campaign,
-      customBranding
+  });
   });
     wordcount = allText.length;
     window.cancelAnimationFrame(req);
@@ -125,7 +81,7 @@ export async function annotate({
 
 export async function getPhrasiosFromText(
   text = getAllTextFromPage(),
-  termsInText = getTermsFromText(text)
+  termsInText = getTermsFromTextWithWorker(text)
 ) {
   if (!termsInText) return []
 

@@ -1,10 +1,18 @@
 import throttle from "lodash.throttle";
 
-// export const getPhrasio = (id) =>
-//   window.adaptor({
-//     subject: "getTooltipContent",
-//     id,
-//   });
+// Set up worker
+const myWorker = new Worker("src/worker.js", {type: 'module'});
+
+export const getTermsFromTextWithWorker = (locale, text, cb) => {
+  myWorker.postMessage(['getTermsFromText', { locale, text }])
+
+  myWorker.onmessage = function(e) {
+    console.log("Message received from worker", e.data[0]);
+    if (e.data[0] === 'gotTermsFromText') {
+      cb(e.data[1])
+    }
+  };
+}
 
 function isTextNodeInViewport(n, range) {
   const r = range.getBoundingClientRect();
@@ -39,14 +47,14 @@ export function scrollThrottle(mutObs, cb) {
   document.addEventListener("scroll", throttle(scrollHandler, 500), true);
 }
 
+// setup regex variables to use in walkerFilter
+const nodeReg =
+  /(head|script|style|meta|noscript|input|img|svg|cite|button|path|d|defs)/i;
+const elReg = /(amboss-)/i;
 function getAllVisibleTextNodes(n = document.body) {
   // setup range variable to use in walkerFilter
   const range = document.createRange();
 
-  // setup regex variables to use in walkerFilter
-  const nodeReg =
-    /(head|script|style|meta|noscript|input|img|svg|cite|button|path|d|defs)/i;
-  const elReg = /(amboss-)/i;
   let outside = 0;
 
   function walkerFilter(node) {
@@ -68,11 +76,7 @@ function getAllVisibleTextNodes(n = document.body) {
     }
   }
 
-  const walker = n.ownerDocument.createTreeWalker(
-    n,
-    NodeFilter.SHOW_TEXT,
-    walkerFilter
-  );
+  const walker = n.ownerDocument.createTreeWalker(n, NodeFilter.SHOW_TEXT, walkerFilter);
   const textNodes = [];
 
   while (outside < 50 && walker.nextNode()) {
@@ -83,17 +87,8 @@ function getAllVisibleTextNodes(n = document.body) {
   return textNodes;
 }
 
-function wrapTextNode(
-  node,
-  regex,
-  id,
-  annotationVariant,
-  locale,
-  theme,
-  campaign,
-  customBranding
-) {
-  if (!node || !regex || !id || !annotationVariant || !locale)
+function wrapTextNode(node, regex, contentId) {
+  if (!node || !regex || !contentId)
     throw new Error("wrapTextNode");
   if (node.parentElement.classList.value.includes("amboss-ignore")) return;
 
@@ -105,13 +100,13 @@ function wrapTextNode(
   if (regex.global) {
     while (node && (hits = regex.exec(node.nodeValue))) {
       regex.lastIndex = 0;
-      node = handleResult(node, hits, id);
+      node = handleResult(node, hits, contentId);
     }
   } else if ((hits = regex.exec(node.nodeValue))) {
-    handleResult(node, hits, id);
+    handleResult(node, hits, contentId);
   }
 
-  function handleResult(node, hits, id) {
+  function handleResult(node, hits, contentId) {
     // store the original text from the node
     const orig = node.nodeValue;
 
@@ -120,13 +115,8 @@ function wrapTextNode(
     node.nodeValue = orig.slice(0, hits.index);
 
     const anchor = doc.createElement("amboss-anchor");
-    anchor.setAttribute("data-phrasio-id", id);
-    anchor.setAttribute("data-locale", locale);
-    anchor.setAttribute("data-annotation-variant", annotationVariant);
-    anchor.setAttribute("data-theme", theme);
-    anchor.setAttribute("data-campaign", campaign);
-    anchor.setAttribute("data-custom-branding", customBranding);
-    anchor.setAttribute("data-variant", 'tooltip');
+    anchor.setAttribute("data-content-id", contentId);
+    anchor.setAttribute("data-annotation-variant", window.ambossAnnotationOptions.annotationVariant);
     anchor.appendChild(doc.createTextNode(hits[0]));
 
     // insert amboss-anchor before the next sibling of the text node
@@ -144,38 +134,6 @@ function wrapTextNode(
   }
 }
 
-const filterTermsByText = (terms, text) => {
-  if (!terms || !text) throw new Error("filterTermsByText");
-
-  const _text = " " + text.replace(/[.?'"!:;()\n\t\r]+/g, " ") + " ";
-  // todo: do I need to clone the map here??????!!!!
-  // todo: remove terms from inner text when matched to prevent double work. As 'terms' or ordered by key length desc, this will have to be done backwards to prevent 'diabetes mellitus' from matching 'diabetes' but not 'diabetes mellitus'
-  terms.forEach((k, v) => {
-    if (v.length <= 4 || !_text.includes(" " + v + " ")) terms.delete(v);
-  });
-
-  return terms;
-};
-
-export const getTerms = () => {
-    return window
-      .adaptor({
-        subject: "getTerms"
-      })
-      // .then((res) => {
-      //   return res;
-      // })
-      // .then((res) => new Map(Object.entries(res)));
-    // you cannot get a map via the background script so get the array of tuples and create the map here
-};
-
-export function track(name, args) {
-  return window.adaptor({
-    subject: "track",
-    trackingProperties: [name, args],
-  });
-}
-
 export function getTextFromVisibleTextNodes() {
   return Array.from(getAllVisibleTextNodes())
     .reduce((acc, cur) => acc + cur.textContent + " ", " ")
@@ -183,23 +141,12 @@ export function getTextFromVisibleTextNodes() {
     .toUpperCase();
 }
 
-export const getTermsFromText = (allText) => {
-  // if (!window.adaptor) return [];
-
-  return getTerms().then((res) => new Map(Object.entries(res))).then((res) => filterTermsByText(res, allText));
-};
-
 export function wrapTextContainingTerms({
-                                          termsForPage,
-                                          locale,
-                                          annotationVariant,
-                                          theme,
-                                          campaign,
-                                          customBranding,
-                                          allVisibleTextNodes = getAllVisibleTextNodes()
-                                        }) {
-
-  if (!termsForPage || !locale || !annotationVariant || !allVisibleTextNodes)
+  termsForPage,
+  locale,
+  allVisibleTextNodes = getAllVisibleTextNodes()
+}) {
+  if (!termsForPage || !locale || !allVisibleTextNodes)
     throw new Error("wrapTextContainingTerms");
 
   termsForPage.forEach((k, v) => {
@@ -213,16 +160,7 @@ export function wrapTextContainingTerms({
       if (matcher.test(n.nodeValue)) {
         // https://stackoverflow.com/questions/1520800/why-does-a-regexp-with-global-flag-give-wrong-results
         matcher.lastIndex = 0;
-        wrapTextNode(
-          n,
-          matcher,
-          k,
-          annotationVariant,
-          locale,
-          theme,
-          campaign,
-          customBranding
-        );
+        wrapTextNode(n, matcher, k);
       }
     });
   });
@@ -231,7 +169,7 @@ export function wrapTextContainingTerms({
 export function getAllTextFromPage() {
   let text = document.documentElement.innerText.replace(/\d\d:\d\d:\d\d/, '')
   // el.innerText seems to return '' for shadowdom
+  // @todo ??????
   Array.from(document.getElementsByTagName('AMBOSS-ANCHOR')).forEach((el) => (text += ` ${el.textContent}`))
   return text.replaceAll('/', ' ').toUpperCase()
 }
-
