@@ -14,23 +14,27 @@ jobs:
 #      - uses: actions/setup-node@v2
 #        with:
 #          node-version: 16
-#      - run: npm ci
+#      - run: npm ci --ignore-scripts
 
   publish-gpr:
 #    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-#       - uses: actions/setup-node@v2
-#         with:
-#           node-version: 16
-#           registry-url: https://npm.pkg.github.com/
-#           scope: '@amboss-mededu'
-      - run: npm whoami
-      - run: npm ci
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+          registry-url: https://npm.pkg.github.com/
+          scope: '@amboss-mededu'
       - run: |
           git config user.email "alexjeffcott@gmail.com"
           git config user.name "alexjeffcott"
+      - run: npm whoami
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.AJT_PAT_AMBOSS_BROWSER_EXTENSION}}
+      - run: npm ci --ignore-scripts
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.AJT_PAT_AMBOSS_BROWSER_EXTENSION}}
       - run: npm version patch
       - run: git push --tags && git push
       - run: npm run build
