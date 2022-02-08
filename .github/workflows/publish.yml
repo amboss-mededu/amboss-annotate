@@ -18,7 +18,7 @@ jobs:
           scope: '@amboss-mededu'
       - run: npm ci
       - run: |
-          git config user.email "alexjeffcott@gamil.com"
+          git config user.email "alexjeffcott@gmail.com"
           git config user.name "ajt"
       - run: npm version patch
       - run: git push --tags && git push
