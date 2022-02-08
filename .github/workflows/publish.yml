@@ -18,8 +18,8 @@ jobs:
           scope: '@amboss-mededu'
       - run: npm ci
       - run: |
-          git config user.email "coding@amboss.com"
-          git config user.name "AMBOSS"
+          git config user.email "ajt@amboss.com"
+          git config user.name "ajt"
       - run: npm version patch
       - run: git push --tags && git push
       - run: npm run build
