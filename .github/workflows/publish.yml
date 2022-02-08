@@ -32,9 +32,9 @@ jobs:
 #       - run: npm whoami
 #         env:
 #           NODE_AUTH_TOKEN: ${{secrets.AJT_PAT_AMBOSS_BROWSER_EXTENSION}}
-      - run: npm ci --ignore-scripts
-        env:
-          PAT_AMBOSS_BROWSER_EXTENSION: ${{secrets.AJT_PAT_AMBOSS_BROWSER_EXTENSION}}
+      - run: |
+            npm set "@amboss-mededu//registry.npmjs.org/:_authToken" ${{ secrets.AJT_PAT_AMBOSS_BROWSER_EXTENSION }}
+            npm ci --ignore-scripts
       - run: npm version patch
       - run: git push --tags && git push
       - run: npm run build
