@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
         with:
           node-version: 16
           registry-url: https://npm.pkg.github.com/
@@ -19,7 +19,7 @@ jobs:
       - run: npm ci
       - run: |
           git config user.email "alexjeffcott@gmail.com"
-          git config user.name "ajt"
+          git config user.name "alexjeffcott"
       - run: npm version patch
       - run: git push --tags && git push
       - run: npm run build
