@@ -18,5 +18,8 @@ npm run dev
 ```
 
 ## Link to the phrasio build assets for faster local development
+`rm -f /Users/ajt/projects/amboss-annotate/node_modules/@amboss-mededu/amboss-phrasio/dist/amboss-phrasio.es.js`
 `ln -s /Users/ajt/projects/amboss-phrasio/dist/amboss-phrasio.es.js /Users/ajt/projects/amboss-annotate/node_modules/@amboss-mededu/amboss-phrasio/dist/amboss-phrasio.es.js`
+
+`rm -f /Users/ajt/projects/amboss-annotate/node_modules/@amboss-mededu/amboss-phrasio/dist/amboss-phrasio.umd.js`
 `ln -s /Users/ajt/projects/amboss-phrasio/dist/amboss-phrasio.umd.js /Users/ajt/projects/amboss-annotate/node_modules/@amboss-mededu/amboss-phrasio/dist/amboss-phrasio.umd.js`

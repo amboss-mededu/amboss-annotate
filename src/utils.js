@@ -1,7 +1,8 @@
 import throttle from "lodash.throttle";
 
 // Set up worker
-const myWorker = new Worker("src/worker.js", {type: 'module'});
+import MyWorker from './worker?worker&inline'
+const myWorker = new MyWorker()
 
 export const getTermsFromTextWithWorker = (locale, text, cb) => {
   myWorker.postMessage(['getTermsFromText', { locale, text }])

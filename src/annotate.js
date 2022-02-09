@@ -7,12 +7,12 @@ import {
 } from "./utils";
 import {setupMutationObserver} from './mutationObserver'
 
-export async function annotate() {
+export async function annotate(ambossAnnotationOptions = window.ambossAnnotationOptions) {
   const {
     annotationVariant,
     locale,
     shouldAnnotate,
-  } = window.ambossAnnotationOptions
+  } = ambossAnnotationOptions
   if (annotationVariant === "none" || !shouldAnnotate) return;
   if (!annotationVariant || !locale) throw new Error("annotate");
 
@@ -66,10 +66,10 @@ export async function annotate() {
   scrollThrottle(mutationObserver, async (req) => {
     allText = await getTextFromVisibleTextNodes();
     getTermsFromTextWithWorker(locale, allText, (data) => {
-    wrapTextContainingTerms({
-      termsForPage: data,
-      locale,
-  });
+      wrapTextContainingTerms({
+        termsForPage: data,
+        locale,
+    });
   });
     wordcount = allText.length;
     window.cancelAnimationFrame(req);

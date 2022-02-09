@@ -34,7 +34,8 @@
     "createIdToPhrasioMap:empty": "node createIdToPhrasioMapEmpty.mjs",
     "cy": "cypress open",
     "build:offline": "npm run clean && npm run createTermToIdMap && npm run createIdToPhrasioMap && vite build",
-    "build": "npm run clean && npm run createTermToIdMap && npm run createIdToPhrasioMap:empty && vite build",
+    "build:all": "npm run clean && npm run createTermToIdMap && npm run createIdToPhrasioMap:empty && vite build",
+    "build": "vite build",
     "dev": "vite",
     "legacy": "vite build --config vite.config.legacy.ts"
   },
@@ -50,7 +51,7 @@
     "vite": "^2.7.13"
   },
   "dependencies": {
-    "@amboss-mededu/amboss-phrasio": "^0.0.47",
+    "@amboss-mededu/amboss-phrasio": "^0.0.49",
     "@popperjs/core": "^2.11.2",
     "lodash.throttle": "^4.1.1"
   }

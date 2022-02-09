@@ -40,6 +40,10 @@ function getPopperOptions(arrow) {
 }
 
 class Anchor extends HTMLElement {
+  static get observedAttributes() {
+    return [ "data-content-id" ];
+  }
+
   get contentId() {
     return this.getAttribute("data-content-id");
   }
@@ -47,12 +51,9 @@ class Anchor extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    this.create = this.create.bind(this);
     this.open = this.open.bind(this);
     this.t = this.t.bind(this);
-    this.keepOpen = this.keepOpen.bind(this);
     this.close = this.close.bind(this);
-    this.destroy = this.destroy.bind(this);
     this.popperInstance = null;
     this.content = document.querySelector("amboss-content-card");
     this.arrow = this.content.shadowRoot.querySelector('#amboss-content-card-arrow')
@@ -73,22 +74,8 @@ class Anchor extends HTMLElement {
   }
 
   render() {
-    if (!this.hasChildNodes()) {
-      console.warn("!! this.hasChildNodes is falsey");
-      return;
-    }
-    if (!this.content) {
-      console.warn("!! this.content is falsey => ", this.content);
-      return;
-    }
     this.target.innerText = this.childNodes[0].textContent
     this.shadowRoot.appendChild(this.target)
-
-    if (this.content === null) {
-      console.error(
-        "this.content is null. You may need to create the <amboss-content-card /> element in the dom"
-      );
-    }
 
     this.target.addEventListener("mouseover", (event) => {
       event.stopPropagation();
@@ -98,7 +85,7 @@ class Anchor extends HTMLElement {
         "mouseover",
         (event) => {
           event.stopPropagation();
-          this.keepOpen();
+          this.content.setAttribute("show-popper", "");
         },
         { once: true }
       );
@@ -107,6 +94,7 @@ class Anchor extends HTMLElement {
         "mouseleave",
         (event) => {
           event.stopPropagation();
+          this.content.removeAttribute("show-popper");
           this.close();
         },
         { once: true }
@@ -115,23 +103,9 @@ class Anchor extends HTMLElement {
 
     this.target.addEventListener("mouseleave", (event) => {
       event.stopPropagation();
+      this.content.removeAttribute("show-popper");
       this.close();
     });
-  }
-
-  create() {
-    if (this.content === null) this.content = document.querySelector("amboss-content-card");
-    if (this.arrow === null) this.arrow = this.content.shadowRoot.querySelector('#amboss-content-card-arrow')
-    this.popperInstance = createPopper(
-      this.target,
-      this.content,
-      getPopperOptions(this.arrow)
-    );
-  }
-
-  keepOpen() {
-    this.content.setAttribute("show-popper", "");
-    this.content.setAttribute("data-content-id", this.contentId);
   }
 
   t() {
@@ -141,31 +115,47 @@ class Anchor extends HTMLElement {
   }
 
   open() {
-    if (this.content === null) this.content = document.querySelector("amboss-content-card");
-    if (this.arrow === null) this.arrow = this.content.shadowRoot.querySelector('#amboss-content-card-arrow');
-    this.content.setAttribute("show-popper", "");
-    this.content.setAttribute("data-content-id", this.contentId);
-    if (this.popperInstance !== null) this.destroy();
-    this.create();
-    this.popperInstance.forceUpdate();
-    this.t();
-  }
+    if (!this.content) {
+      return undefined
+    }
 
-  close() {
-    this.content.removeAttribute("show-popper");
-    this.content.removeAttribute("data-content-id");
-    setTimeout(() => {
-      if (!this.content.hasAttribute("show-popper")) {
-        this.destroy();
-      }
-    }, 100);
-  }
-
-  destroy() {
     if (this.popperInstance !== null) {
       this.popperInstance.destroy();
       this.popperInstance = null;
     }
+
+    this.content.setAttribute("data-content-id", this.contentId);
+    if (this.content.getAttribute("data-content-id") !== this.contentId) {
+      this.open()
+      return undefined
+    }
+
+    this.arrow = this.content.shadowRoot.querySelector('#amboss-content-card-arrow')
+    if (!this.arrow) {
+      this.open();
+      return undefined
+    }
+
+    this.popperInstance = createPopper(
+      this.target,
+      this.content,
+      getPopperOptions(this.arrow)
+    );
+    this.popperInstance.forceUpdate();
+    this.content.setAttribute("show-popper", "");
+    this.t();
+  }
+
+  close() {
+    setTimeout(() => {
+      if (!this.content.hasAttribute("show-popper")) {
+        this.content.removeAttribute("data-content-id");
+        if (this.popperInstance !== null) {
+          this.popperInstance.destroy();
+          this.popperInstance = null;
+        }
+      }
+    }, 50);
   }
 }
 
