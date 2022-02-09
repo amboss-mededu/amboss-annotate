@@ -24,6 +24,11 @@ const getTermsFromText = (locale, allText) => {
   return getTerms(locale).then((res) => new Map(Object.entries(res))).then((res) => filterTermsByText(res, allText));
 };
 
+const getPhrasioIdsFromText = (locale, allText) => {
+  const terms = getTerms(locale).then((res) => new Map(Object.entries(res))).then((res) => filterTermsByText(res, allText));
+  return [...new Set(terms.values())].filter(Boolean)
+};
+
 self.onmessage = async function (e) {
 const [message, data] = e.data
   switch (message) {
@@ -32,7 +37,12 @@ const [message, data] = e.data
         const result = await getTermsFromText(data.locale, data.text)
         postMessage(['gotTermsFromText', result])
         break;
-      default:
-        throw new Error()
+    case 'getPhrasioIdsFromText':
+      // eslint-disable-next-line no-case-declarations
+      const phrasioIds = await getPhrasioIdsFromText(data.locale, data.text)
+      postMessage(['gotPhrasioIdsFromText', phrasioIds])
+      break;
+    default:
+      throw new Error()
   }
 };

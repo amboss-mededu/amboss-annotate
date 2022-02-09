@@ -3,7 +3,8 @@ import {
   scrollThrottle,
   getTermsFromTextWithWorker,
   getTextFromVisibleTextNodes,
-  getAllTextFromPage
+  getAllTextFromPage,
+  getPhrasioIdsFromTextWithWorker
 } from "./utils";
 import {setupMutationObserver} from './mutationObserver'
 
@@ -81,7 +82,7 @@ export async function annotate(ambossAnnotationOptions = window.ambossAnnotation
 
 function cbFunctionWrapper(text) {
   return new Promise((resolve) => {
-    getTermsFromTextWithWorker(window.ambossAnnotationOptions.locale, text, (data) => resolve(data));
+    getPhrasioIdsFromTextWithWorker(window.ambossAnnotationOptions.locale, text, (data) => resolve(data));
   });
 }
 
@@ -89,7 +90,6 @@ export async function getPhrasiosFromText(
   text = getAllTextFromPage()
 ) {
   if (!text) return []
-  const mapOfPhrasioIds = await cbFunctionWrapper(text)
-  return [...new Set(mapOfPhrasioIds.values())].filter(Boolean)
-
+  const listOfPhrasioIds = await cbFunctionWrapper(text)
+  return listOfPhrasioIds
 }

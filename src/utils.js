@@ -6,14 +6,23 @@ const myWorker = new MyWorker()
 
 export const getTermsFromTextWithWorker = (locale, text, cb) => {
   myWorker.postMessage(['getTermsFromText', { locale, text }])
-
   myWorker.onmessage = function(e) {
-    console.log("Message received from worker", e.data[0]);
     if (e.data[0] === 'gotTermsFromText') {
       cb(e.data[1])
     }
   };
 }
+
+export const getPhrasioIdsFromTextWithWorker = (locale, text, cb) => {
+  myWorker.postMessage(['getPhrasioIdsFromText', { locale, text }])
+  myWorker.onmessage = function(e) {
+    if (e.data[0] === 'gotPhrasioIdsFromText') {
+      cb(e.data[1])
+    }
+  };
+}
+
+
 
 function isTextNodeInViewport(n, range) {
   const r = range.getBoundingClientRect();
