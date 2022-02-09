@@ -34,8 +34,7 @@
     "createIdToPhrasioMap:empty": "node createIdToPhrasioMapEmpty.mjs",
     "cy": "cypress open",
     "build:offline": "npm run clean && npm run createTermToIdMap && npm run createIdToPhrasioMap && vite build",
-    "build:all": "npm run clean && npm run createTermToIdMap && npm run createIdToPhrasioMap:empty && vite build",
-    "build": "vite build",
+    "build": "npm run clean && npm run createTermToIdMap && npm run createIdToPhrasioMap:empty && vite build",
     "dev": "vite",
     "legacy": "vite build --config vite.config.legacy.ts"
   },
