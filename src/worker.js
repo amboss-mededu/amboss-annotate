@@ -25,11 +25,9 @@ const getTermsFromText = (locale, allText) => {
 };
 
 self.onmessage = async function (e) {
-  console.log("Worker: Message received from main script");
 const [message, data] = e.data
   switch (message) {
       case 'getTermsFromText':
-        console.log("Worker: Posting message back to main script", data);
         // eslint-disable-next-line no-case-declarations
         const result = await getTermsFromText(data.locale, data.text)
         postMessage(['gotTermsFromText', result])

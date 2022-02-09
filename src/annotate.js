@@ -79,13 +79,17 @@ export async function annotate(ambossAnnotationOptions = window.ambossAnnotation
   return undefined;
 }
 
-export async function getPhrasiosFromText(
-  text = getAllTextFromPage(),
-  termsInText = getTermsFromTextWithWorker(text)
-) {
-  if (!termsInText) return []
+function cbFunctionWrapper(text) {
+  return new Promise((resolve) => {
+    getTermsFromTextWithWorker(window.ambossAnnotationOptions.locale, text, (data) => resolve(data));
+  });
+}
 
-  return await termsInText.then((res) =>
-    Promise.all([...new Set(res.values())].filter(Boolean))
-  )
+export async function getPhrasiosFromText(
+  text = getAllTextFromPage()
+) {
+  if (!text) return []
+  const mapOfPhrasioIds = await cbFunctionWrapper(text)
+  return [...new Set(mapOfPhrasioIds.values())].filter(Boolean)
+
 }
