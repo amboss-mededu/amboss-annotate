@@ -74,6 +74,7 @@ class Anchor extends HTMLElement {
   }
 
   render() {
+    if(!this.childNodes[0]) return undefined;
     this.target.innerText = this.childNodes[0].textContent
     this.shadowRoot.appendChild(this.target)
 

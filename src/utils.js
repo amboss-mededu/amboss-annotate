@@ -60,41 +60,55 @@ export function scrollThrottle(mutObs, cb) {
 // setup regex variables to use in walkerFilter
 const nodeReg =
   /(head|script|style|meta|noscript|input|img|svg|cite|button|path|d|defs)/i;
-const elReg = /(amboss-)/i;
-function getAllVisibleTextNodes(n = document.body) {
-  // setup range variable to use in walkerFilter
-  const range = document.createRange();
+const range = document.createRange();
+function walkerFilter(node) {
+  range.selectNode(node);
+  const a = isTextNodeInViewport(node, range);
+  const b = !nodeReg.test(node.parentNode.tagName);
+  const c = node.textContent.trim().length > 3;
+  const d = !node.parentElement.classList.value.includes('amboss-ignore')
+  // const f = !node.parentNode.hidden
+  const shouldAccept = a && b && c && d;
 
-  let outside = 0;
+  if (shouldAccept) return NodeFilter.FILTER_ACCEPT;
+  return NodeFilter.FILTER_REJECT;
+}
 
-  function walkerFilter(node) {
-    range.selectNode(node);
-    const a = isTextNodeInViewport(node, range);
-    const b = !nodeReg.test(node.parentNode.tagName);
-    const c = !elReg.test(node.parentElement.tagName);
-    // const d = !node.parentElement.classList.value.includes('amboss-ignore')
-    // const e = !node.parentNode.hidden
-    const f = node.textContent.trim().length > 3;
-    const shouldAccept = a && b && c && f;
-
-    if (!a) outside++;
-    if (a) outside = 0;
-    if (shouldAccept && outside < 50) {
-      return NodeFilter.FILTER_ACCEPT;
-    } else {
-      return NodeFilter.FILTER_REJECT;
-    }
-  }
-
+export async function getVisibleTextNodes(n = document.body) {
   const walker = n.ownerDocument.createTreeWalker(n, NodeFilter.SHOW_TEXT, walkerFilter);
   const textNodes = [];
-
-  while (outside < 50 && walker.nextNode()) {
+  while (walker.nextNode()) {
     textNodes.push(walker.currentNode);
   }
-
   range.detach();
   return textNodes;
+}
+
+function handleResult(node, hits, contentId, parentNode, nextSibling, doc) {
+  // store the original text from the node
+  const orig = node.nodeValue;
+
+  // todo: use newNode = textNode.splitText(offset) ??
+  // replace the text in the node with the text that comes before the match
+  node.nodeValue = orig.slice(0, hits.index);
+
+  const anchor = doc.createElement("amboss-anchor");
+  anchor.setAttribute("data-content-id", contentId);
+  anchor.setAttribute("data-annotation-variant", window.ambossAnnotationOptions.annotationVariant);
+  anchor.appendChild(doc.createTextNode(hits[0]));
+
+  // insert amboss-anchor before the next sibling of the text node
+  parentNode.insertBefore(anchor, nextSibling);
+
+  // delete text from the beginning of the match for the length of the match (ie delete the matched text)
+  const rest = orig.slice(hits.index + hits[0].length);
+
+  // if there is text in 'rest' insert it before the next sibling of the text node
+  const result =
+    rest && parentNode.insertBefore(doc.createTextNode(rest), nextSibling);
+
+  // return node to continue parsing if there are more than 4 chars (w/o whitespace) after the amboss-anchor
+  if (rest.trim().length > 4) return result;
 }
 
 function wrapTextNode(node, regex, contentId) {
@@ -110,42 +124,15 @@ function wrapTextNode(node, regex, contentId) {
   if (regex.global) {
     while (node && (hits = regex.exec(node.nodeValue))) {
       regex.lastIndex = 0;
-      node = handleResult(node, hits, contentId);
+      node = handleResult(node, hits, contentId, parentNode, nextSibling, doc);
     }
   } else if ((hits = regex.exec(node.nodeValue))) {
-    handleResult(node, hits, contentId);
-  }
-
-  function handleResult(node, hits, contentId) {
-    // store the original text from the node
-    const orig = node.nodeValue;
-
-    // todo: use newNode = textNode.splitText(offset) ??
-    // replace the text in the node with the text that comes before the match
-    node.nodeValue = orig.slice(0, hits.index);
-
-    const anchor = doc.createElement("amboss-anchor");
-    anchor.setAttribute("data-content-id", contentId);
-    anchor.setAttribute("data-annotation-variant", window.ambossAnnotationOptions.annotationVariant);
-    anchor.appendChild(doc.createTextNode(hits[0]));
-
-    // insert amboss-anchor before the next sibling of the text node
-    parentNode.insertBefore(anchor, nextSibling);
-
-    // delete text from the beginning of the match for the length of the match (ie delete the matched text)
-    const rest = orig.slice(hits.index + hits[0].length);
-
-    // if there is text in 'rest' insert it before the next sibling of the text node
-    const result =
-      rest && parentNode.insertBefore(doc.createTextNode(rest), nextSibling);
-
-    // return node to continue parsing if there are more than 4 chars (w/o whitespace) after the amboss-anchor
-    if (rest.trim().length > 4) return result;
+    handleResult(node, hits, contentId, parentNode, nextSibling, doc);
   }
 }
 
-export function getTextFromVisibleTextNodes() {
-  return Array.from(getAllVisibleTextNodes())
+export function getTextFromVisibleTextNodes(textNodes) {
+  return Array.from(textNodes)
     .reduce((acc, cur) => acc + cur.textContent + " ", " ")
     .replaceAll("/", " ")
     .toUpperCase();
@@ -154,9 +141,9 @@ export function getTextFromVisibleTextNodes() {
 export function wrapTextContainingTerms({
   termsForPage,
   locale,
-  allVisibleTextNodes = getAllVisibleTextNodes()
+  textNodes
 }) {
-  if (!termsForPage || !locale || !allVisibleTextNodes)
+  if (!termsForPage || !locale || !textNodes)
     throw new Error("wrapTextContainingTerms");
 
   termsForPage.forEach((k, v) => {
@@ -166,7 +153,7 @@ export function wrapTextContainingTerms({
         : new RegExp(`(?<=^|[\\n "/])(${v})(?=$|[\\n /,.:;"])`, "gi");
 
     // todo: may need to put this in a `while` to ensure all matches are collected, if wrapping the nodes directly
-    allVisibleTextNodes.forEach((n) => {
+    textNodes.forEach((n) => {
       if (matcher.test(n.nodeValue)) {
         // https://stackoverflow.com/questions/1520800/why-does-a-regexp-with-global-flag-give-wrong-results
         matcher.lastIndex = 0;

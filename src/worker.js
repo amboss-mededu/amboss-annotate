@@ -24,8 +24,8 @@ const getTermsFromText = (locale, allText) => {
   return getTerms(locale).then((res) => new Map(Object.entries(res))).then((res) => filterTermsByText(res, allText));
 };
 
-const getPhrasioIdsFromText = (locale, allText) => {
-  const terms = getTerms(locale).then((res) => new Map(Object.entries(res))).then((res) => filterTermsByText(res, allText));
+const getPhrasioIdsFromText = async (locale, allText) => {
+  const terms = await getTerms(locale).then((res) => new Map(Object.entries(res))).then((res) => filterTermsByText(res, allText));
   return [...new Set(terms.values())].filter(Boolean)
 };
 

@@ -4,7 +4,8 @@ import {
   getTermsFromTextWithWorker,
   getTextFromVisibleTextNodes,
   getAllTextFromPage,
-  getPhrasioIdsFromTextWithWorker
+  getPhrasioIdsFromTextWithWorker,
+  getVisibleTextNodes
 } from "./utils";
 import {setupMutationObserver} from './mutationObserver'
 
@@ -27,13 +28,15 @@ export async function annotate(ambossAnnotationOptions = window.ambossAnnotation
   // setup mutation observer
   const { mutationObserver, rootNode, mutationConfig } = setupMutationObserver(
     document.body,
-    async () => {
-      allText = await getTextFromVisibleTextNodes();
+    async (textNodes) => {
+      const textNodesToParse = textNodes || await getVisibleTextNodes()
+      allText = await getTextFromVisibleTextNodes(textNodesToParse);
       wordcount = allText.length;
       getTermsFromTextWithWorker(locale, allText, (data) => {
         wrapTextContainingTerms({
           termsForPage: data,
           locale,
+          textNodes
         })
       });
     }
@@ -42,7 +45,8 @@ export async function annotate(ambossAnnotationOptions = window.ambossAnnotation
   // initial annotation
   async function initialAnnotation() {
     const prev = wordcount;
-    const txt = await getTextFromVisibleTextNodes();
+    const textNodes = await getVisibleTextNodes()
+    const txt = await getTextFromVisibleTextNodes(textNodes);
     allText = txt || allText;
     wordcount = allText.length;
     if (wordcount > 500) {
@@ -51,6 +55,7 @@ export async function annotate(ambossAnnotationOptions = window.ambossAnnotation
           wrapTextContainingTerms({
             termsForPage: data,
             locale,
+            textNodes
           })
         });
       } else {
@@ -64,16 +69,18 @@ export async function annotate(ambossAnnotationOptions = window.ambossAnnotation
   const initInt = setInterval(initialAnnotation, 200);
 
   // setup scroll observer
-  scrollThrottle(mutationObserver, async (req) => {
-    allText = await getTextFromVisibleTextNodes();
-    getTermsFromTextWithWorker(locale, allText, (data) => {
+  scrollThrottle(mutationObserver, async (requestedAnimationFrame) => {
+    const textNodes = await getVisibleTextNodes()
+    const txt = await getTextFromVisibleTextNodes(textNodes);
+    getTermsFromTextWithWorker(locale, txt, (data) => {
       wrapTextContainingTerms({
         termsForPage: data,
         locale,
+        textNodes
     });
   });
     wordcount = allText.length;
-    window.cancelAnimationFrame(req);
+    window.cancelAnimationFrame(requestedAnimationFrame);
     mutationObserver.observe(rootNode, mutationConfig);
   });
 
