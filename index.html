@@ -52,34 +52,140 @@
     <div class="row-credit-container" data-reactid="610">
   </div></div></div></a></li>
 </ul>
-<script id="amboss-content-card" type="module">
-  // import { annotate, initTooltips, AmbossContentCard, AmbossAnchor } from './dist/amboss-annotate.es'
-  import { annotate, initTooltips, AmbossContentCard, AmbossAnchor } from './src'
+<script type="module">
+  import { annotate, initAnnotation } from './src'
+  // these phrasio maps should be moved to s3
+  import phrasiosDE from './src/phrasios_de.json'
+  import phrasiosUS from './src/phrasios_us.json'
 
-  if (typeof window !== 'undefined') {
-    window.ambossAnnotationOptions = {
-      Content: AmbossContentCard,
-      Anchor: AmbossAnchor,
-      shouldAnnotate: true,
-      annotationVariant: 'underline',
-      theme: 'light-theme',
-      locale: 'us',
-      campaign: '123890',
-      token: '0a42c7a3ff83eca9f7323fa129d4dbda',
-      // token: 'aa95d5a63aa50efe66db3ac5b0309624',
-      offline: false,
-      customBranding: 'no',
-    };
-    window.ambossAnnotationAdaptor = {};
-    // initialise custom elements and methods
-    initTooltips()
+  // initialise variables and custom elements
+  initAnnotation()
 
-    // overwrite methods here
-    window.ambossAnnotationAdaptor.track = async (trackingProperties) => console.info('adaptor track', trackingProperties);
+  // overwrite options here
+  window.ambossAnnotationOptions.campaign = '123890'
+  window.ambossAnnotationOptions.token = '0a42c7a3ff83eca9f7323fa129d4dbda'
+  window.ambossAnnotationOptions.offline = true
 
-    // call annotation
-    annotate()
+  // overwrite methods here
+  async function getTooltipContentLocal(locale, contentId, campaign = '') {
+    if (locale !== 'de' && locale !== 'us') return undefined;
+    if (!contentId) return undefined;
+
+    const phrasio = locale === 'us' ? phrasiosUS[contentId] : phrasiosDE[contentId]
+    if (!phrasio) {
+      console.error('phrasio', phrasio)
+      console.error('contentId', contentId)
+      return undefined
+    }
+
+    function generateHref({ particleEid, articleEid, title, locale, campaign }) {
+      const replaceSpacesWithUnderscores = (str) => str.replace(/ /g, '_')
+      const urlify = (str) =>
+        encodeURIComponent(replaceSpacesWithUnderscores(str)).replace(/[!'()*]/g, (c) => '%' + c.charCodeAt(0).toString(16))
+      const utmString = `?utm_campaign=${campaign}&utm_term=${urlify(title)}`
+      const anchorString = particleEid ? `#${particleEid}` : ''
+      // https://next.amboss.com/us/article/4N03Yg?utm_campaign=aaas&utm_term=FAST#Zefeb92d093a9fbf8b7c983722bdbb10d
+      return `https://next.amboss.com/${locale}/article/${articleEid}${utmString}${anchorString}`
+    }
+
+    function normalisePhrasio(phrasioRAW, locale, campaign) {
+      const destinations = Array.isArray(phrasioRAW.destinations) ? phrasioRAW.destinations : []
+
+      return {
+        title: phrasioRAW.title || '',
+        subtitle: phrasioRAW.etymology || '',
+        body: phrasioRAW.description || '',
+        media: [],
+        destinations: destinations.map((d) => ({
+          label: d.label,
+          href: generateHref({
+            particleEid: d.anchor || '',
+            articleEid: d.lc_xid || '',
+            title: phrasioRAW.title || '',
+            locale,
+            campaign,
+          }),
+        })),
+      }
+    }
+
+    return normalisePhrasio(phrasio, locale, campaign)
   }
+
+  async function getTooltipContentApi(token = '', locale, contentId, campaign = '') {
+    if (locale !== 'de' && locale !== 'us') return undefined;
+    if (!contentId) return undefined;
+
+    function generateHref({ particleEid, articleEid, title, locale, campaign }) {
+      const replaceSpacesWithUnderscores = (str) => str.replace(/ /g, '_')
+      const urlify = (str) =>
+        encodeURIComponent(replaceSpacesWithUnderscores(str)).replace(/[!'()*]/g, (c) => '%' + c.charCodeAt(0).toString(16))
+      const utmString = `?utm_campaign=${campaign}&utm_term=${urlify(title)}`
+      const anchorString = particleEid ? `#${particleEid}` : ''
+      // https://next.amboss.com/us/article/4N03Yg?utm_campaign=aaas&utm_term=FAST#Zefeb92d093a9fbf8b7c983722bdbb10d
+      return `https://next.amboss.com/${locale}/article/${articleEid}${utmString}${anchorString}`
+    }
+
+    function normalisePhrasio(phrasioRAW, locale, campaign) {
+      const destinations = Array.isArray(phrasioRAW.destinations) ? phrasioRAW.destinations : []
+      const media = Array.isArray(phrasioRAW.media) ? phrasioRAW.media : []
+      return {
+        title: phrasioRAW.title || '',
+        subtitle: phrasioRAW.translation || '',
+        body: phrasioRAW.abstract || '',
+        media: media.map((m) => ({
+          eid: m.eid,
+          copyright: m.copyright.html,
+          title: m.title,
+          href: m.canonicalUrl,
+        })),
+        destinations: destinations.map((d) => ({
+          label: d.label,
+          href: generateHref({
+            particleEid: d.particleEid || '',
+            articleEid: d.articleEid || '',
+            title: phrasioRAW.title || '',
+            locale,
+            campaign,
+          }),
+        })),
+      }
+    }
+
+    const bodyWithMedia = `{"query":"{phraseGroup(eid: \\"${contentId}\\") {title\\nabstract\\ntranslation\\ndestinations {\\nlabel\\narticleEid\\nparticleEid}\\nmedia {\\ntitle\\neid\\ncanonicalUrl\\ncopyright {\\nhtml}}}}"}`
+
+    const fetchPhrasioWithMedia = (body) => fetch(`https://www.labamboss.com/${locale}/api/graphql`, {
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json",
+        "authorization": `Bearer ${token}`,
+      },
+      "body": body
+    })
+
+    return fetchPhrasioWithMedia(bodyWithMedia).then(async (res) => {
+      const { data, errors } = await res.json()
+      if (!Array.isArray(errors) && data && data.phraseGroup) {
+        return normalisePhrasio(data.phraseGroup, locale, campaign)
+      } else if (data === null) {
+        console.error(errors)
+        return undefined
+      }
+    })
+      .catch(console.error);
+  }
+
+  window.ambossAnnotationAdaptor.getTooltipContent = async (contentId) => {
+    const {locale, token, campaign, offline} = window.ambossAnnotationOptions;
+    console.info('adaptor getTooltipContent', {locale, token, campaign, contentId})
+
+    return offline ? getTooltipContentLocal(locale, contentId, campaign) : getTooltipContentApi(token, locale, contentId, campaign)
+  }
+
+  window.ambossAnnotationAdaptor.track = async (trackingProperties) => console.info('adaptor track', trackingProperties);
+
+  // call annotation
+  annotate()
 </script>
 </body>
 </html>

@@ -32,10 +32,11 @@
     "createTermToIdMap": "node createTermToIdMap.mjs",
     "createIdToPhrasioMap": "node createIdToPhrasioMap.mjs",
     "createIdToPhrasioMap:empty": "node createIdToPhrasioMapEmpty.mjs",
-    "cy": "cypress open",
-    "build:offline": "npm run clean && npm run createTermToIdMap && npm run createIdToPhrasioMap && vite build",
+    "linkLocalAmbossPhrasio": "ln -sF /Users/ajt/projects/amboss-phrasio/dist /Users/ajt/projects/amboss-annotate/node_modules/@amboss-mededu/amboss-phrasio/dist",
     "build": "npm run clean && npm run createTermToIdMap && npm run createIdToPhrasioMap:empty && vite build",
-    "dev": "vite build",
+    "build:offline": "npm run clean && npm run createTermToIdMap && npm run createIdToPhrasioMap && vite build",
+    "run:local": "npm run linkLocalAmbossPhrasio && vite",
+    "cy": "cypress open",
     "legacy": "vite build --config vite.config.legacy.ts"
   },
   "devDependencies": {
