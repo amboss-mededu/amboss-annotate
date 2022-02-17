@@ -35,6 +35,7 @@
     "linkLocalAmbossPhrasio": "ln -sF /Users/ajt/projects/amboss-phrasio/dist /Users/ajt/projects/amboss-annotate/node_modules/@amboss-mededu/amboss-phrasio/dist",
     "build": "npm run clean && npm run createTermToIdMap && npm run createIdToPhrasioMap:empty && vite build",
     "build:offline": "npm run clean && npm run createTermToIdMap && npm run createIdToPhrasioMap && vite build",
+    "build:local": "vite build",
     "run:local": "npm run linkLocalAmbossPhrasio && vite",
     "cy": "cypress open",
     "legacy": "vite build --config vite.config.legacy.ts"
@@ -51,7 +52,7 @@
     "vite": "^2.7.13"
   },
   "dependencies": {
-    "@amboss-mededu/amboss-phrasio": "^0.0.50",
+    "@amboss-mededu/amboss-phrasio": "^0.0.51",
     "@popperjs/core": "^2.11.2",
     "lodash.throttle": "^4.1.1"
   }
