@@ -52,7 +52,7 @@
     "vite": "^2.7.13"
   },
   "dependencies": {
-    "@amboss-mededu/amboss-phrasio": "^0.0.51",
+    "@amboss-mededu/amboss-phrasio": "^0.0.52",
     "@popperjs/core": "^2.11.2",
     "lodash.throttle": "^4.1.1"
   }
