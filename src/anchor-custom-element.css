@@ -1,4 +1,4 @@
-:host-context(amboss-anchor) {
+:host-context(annotation-anchor) {
   /* dont do overrides here as we want top keep the styling from the page!!!*/
   /*color: initial;*/
 }
@@ -15,6 +15,7 @@
 
 :host-context([data-annotation-variant="logo"]) > span,
 :host-context([data-annotation-variant="none"]) > span {
+  border-bottom: initial;
   pointer-events: none;
 }
 

@@ -1,5 +1,12 @@
 import { createPopper } from "@popperjs/core";
-import { tooltip_anchor_hovered } from "./event-names";
+import {
+  CARD_TAG_NAME,
+  MATCH_WRAPPER_CONTENT_ID_ATTR,
+  TOOLTIP_OPENED_EVENT,
+  ARROW_ID_SELECTOR
+} from './consts'
+import {track} from './utils'
+
 import styles from "./anchor-custom-element.css";
 
 function getPopperOptions(arrow) {
@@ -41,11 +48,11 @@ function getPopperOptions(arrow) {
 
 class Anchor extends HTMLElement {
   static get observedAttributes() {
-    return [ "data-content-id" ];
+    return [ MATCH_WRAPPER_CONTENT_ID_ATTR ];
   }
 
   get contentId() {
-    return this.getAttribute("data-content-id");
+    return this.getAttribute(MATCH_WRAPPER_CONTENT_ID_ATTR);
   }
 
   constructor() {
@@ -55,8 +62,8 @@ class Anchor extends HTMLElement {
     this.t = this.t.bind(this);
     this.close = this.close.bind(this);
     this.popperInstance = null;
-    this.content = document.querySelector("amboss-content-card");
-    this.arrow = this.content.shadowRoot.querySelector('#amboss-content-card-arrow')
+    this.content = document.querySelector(CARD_TAG_NAME);
+    this.arrow = this.content.shadowRoot.querySelector(ARROW_ID_SELECTOR)
     this.target = document.createElement("span");
   }
 
@@ -110,7 +117,7 @@ class Anchor extends HTMLElement {
   }
 
   t() {
-    window.ambossAnnotationAdaptor.track([tooltip_anchor_hovered, {
+    track([TOOLTIP_OPENED_EVENT, {
       contentId: this.contentId,
     }]);
   }
@@ -125,13 +132,14 @@ class Anchor extends HTMLElement {
       this.popperInstance = null;
     }
 
-    this.content.setAttribute("data-content-id", this.contentId);
-    if (this.content.getAttribute("data-content-id") !== this.contentId) {
+    this.content.setAttribute(MATCH_WRAPPER_CONTENT_ID_ATTR, this.contentId);
+    if (this.content.getAttribute(MATCH_WRAPPER_CONTENT_ID_ATTR) !== this.contentId) {
       this.open()
       return undefined
     }
 
-    this.arrow = this.content.shadowRoot.querySelector('#amboss-content-card-arrow')
+    this.arrow = this.content.shadowRoot.querySelector(ARROW_ID_SELECTOR)
+    console.log('|> this.arrow ===> ', this.arrow);
     if (!this.arrow) {
       this.open();
       return undefined
@@ -150,7 +158,7 @@ class Anchor extends HTMLElement {
   close() {
     setTimeout(() => {
       if (!this.content.hasAttribute("show-popper")) {
-        this.content.removeAttribute("data-content-id");
+        this.content.removeAttribute(MATCH_WRAPPER_CONTENT_ID_ATTR);
         if (this.popperInstance !== null) {
           this.popperInstance.destroy();
           this.popperInstance = null;

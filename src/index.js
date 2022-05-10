@@ -1,30 +1,36 @@
-import { annotate, getPhrasiosFromText } from "./annotate";
-import { AmbossContentCard } from '@amboss-mededu/amboss-phrasio'
-import AmbossAnchor from "./anchor-custom-element";
+import { annotate, getIdsFromText } from "./annotate";
+import { ContentCard } from '@amboss-mededu/amboss-phrasio';
+import AnnotationAnchor from "./anchor-custom-element";
+import {getContent, track} from './utils';
+import {CARD_TAG_NAME, MATCH_WRAPPER_CONTENT_ID_ATTR, MATCH_WRAPPER_TAG_NAME} from './consts'
 
-function initAnnotation() {
-  if (!window.ambossAnnotationAdaptor) window.ambossAnnotationAdaptor = {}
-  if (!window.ambossAnnotationOptions) window.ambossAnnotationOptions = {}
-  if (!window.ambossAnnotationOptions.Content) {
-    window.ambossAnnotationOptions = {
-      Content: AmbossContentCard,
-      Anchor: AmbossAnchor,
-      shouldAnnotate: true,
-      token: '',
-      offline: true,
-      campaign: '',
-      locale: 'unset',
-      annotationVariant: 'underline',
-      theme: 'light-theme',
-      customBranding: 'no',
-    };
-  }
-
-  if(window.customElements.get('amboss-content-card') === undefined)
-    window.customElements.define('amboss-content-card', AmbossContentCard)
-
-  if(window.customElements.get('amboss-anchor') === undefined)
-    window.customElements.define('amboss-anchor', AmbossAnchor)
+const annotationOptionDefaults = {
+    Content: ContentCard,
+    Anchor: AnnotationAnchor,
+    shouldAnnotate: true,
+    locale: 'us',
+    annotationVariant: 'underline',
+    theme: 'dark-theme',
 }
 
-export { annotate, initAnnotation, getPhrasiosFromText };
+async function initAnnotation() {
+  if (!window.annotationOptions) window.annotationOptions = {}
+  if (!window.annotationOptions.Content)
+    window.annotationOptions = annotationOptionDefaults
+
+  if(window.customElements.get(CARD_TAG_NAME) === undefined)
+    window.customElements.define(CARD_TAG_NAME, ContentCard)
+
+  if(window.customElements.get(MATCH_WRAPPER_TAG_NAME) === undefined)
+    window.customElements.define(MATCH_WRAPPER_TAG_NAME, AnnotationAnchor)
+
+    const contentCard = new window.annotationOptions.Content(getContent, track)
+    contentCard.setAttribute('data-locale', window.annotationOptions.locale)
+    contentCard.setAttribute('data-theme', window.annotationOptions.theme)
+    contentCard.setAttribute(MATCH_WRAPPER_CONTENT_ID_ATTR, '')
+    document.body.appendChild(contentCard)
+
+  return true
+}
+
+export { annotate, initAnnotation, getIdsFromText };

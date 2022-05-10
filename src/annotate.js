@@ -1,102 +1,39 @@
 import {
-  wrapTextContainingTerms,
-  scrollThrottle,
-  getTermsFromTextWithWorker,
-  getTextFromVisibleTextNodes,
-  getAllTextFromPage,
-  getPhrasioIdsFromTextWithWorker,
-  getVisibleTextNodes
-} from "./utils";
-import {setupMutationObserver} from './mutationObserver'
+  TextNodesFromDOM,
+  Match,
+  annotateDOM,
+} from "@fairfox/adorn";
+import {MATCH_WRAPPER_TAG_NAME, PATH_TO_DE_DE_TERMS, PATH_TO_US_EN_TERMS, MATCH_WRAPPER_CONTENT_ID_ATTR, GLOBAL_OPTIONS_OBJECT} from './consts'
 
-export async function annotate(ambossAnnotationOptions = window.ambossAnnotationOptions) {
+
+export async function annotate(annotationOptions = window[GLOBAL_OPTIONS_OBJECT]) {
   const {
     annotationVariant,
     locale,
     shouldAnnotate,
-  } = ambossAnnotationOptions
+  } = annotationOptions
   if (annotationVariant === "none" || !shouldAnnotate) return;
   if (!annotationVariant || !locale) throw new Error("annotate");
 
-  let allText, wordcount;
-
-  if (!document.getElementsByTagName("amboss-content-card").length) {
-    const content = document.createElement("amboss-content-card");
-    document.body.appendChild(content);
-  }
-
-  // setup mutation observer
-  const { mutationObserver, rootNode, mutationConfig } = setupMutationObserver(
-    document.body,
-    async (textNodes) => {
-      const textNodesToParse = textNodes || await getVisibleTextNodes()
-      allText = await getTextFromVisibleTextNodes(textNodesToParse);
-      wordcount = allText.length;
-      getTermsFromTextWithWorker(locale, allText, (data) => {
-        wrapTextContainingTerms({
-          termsForPage: data,
-          locale,
-          textNodes
-        })
-      });
-    }
-  );
-
-  // initial annotation
-  async function initialAnnotation() {
-    const prev = wordcount;
-    const textNodes = await getVisibleTextNodes()
-    const txt = await getTextFromVisibleTextNodes(textNodes);
-    allText = txt || allText;
-    wordcount = allText.length;
-    if (wordcount > 500) {
-      if (prev !== wordcount) {
-        getTermsFromTextWithWorker(locale, allText, (data) => {
-          wrapTextContainingTerms({
-            termsForPage: data,
-            locale,
-            textNodes
-          })
-        });
-      } else {
-        setTimeout(() => {
-          mutationObserver.observe(rootNode, mutationConfig);
-        }, 1000);
-        clearInterval(initInt);
-      }
-    }
-  }
-  const initInt = setInterval(initialAnnotation, 200);
-
-  // setup scroll observer
-  scrollThrottle(mutationObserver, async (requestedAnimationFrame) => {
-    const textNodes = await getVisibleTextNodes()
-    const txt = await getTextFromVisibleTextNodes(textNodes);
-    getTermsFromTextWithWorker(locale, txt, (data) => {
-      wrapTextContainingTerms({
-        termsForPage: data,
-        locale,
-        textNodes
-    });
+  const terms = await import(locale === 'de' ? PATH_TO_DE_DE_TERMS : PATH_TO_US_EN_TERMS)
+  const match = new Match(new Map(terms.default), null, {
+    tag: MATCH_WRAPPER_TAG_NAME,
+    getAttrs: id => `${MATCH_WRAPPER_CONTENT_ID_ATTR}="${id}" data-annotation-variant="${annotationVariant}"`
   });
-    wordcount = allText.length;
-    window.cancelAnimationFrame(requestedAnimationFrame);
-    mutationObserver.observe(rootNode, mutationConfig);
-  });
+  const textNodesFromDOM = new TextNodesFromDOM(document.body, [MATCH_WRAPPER_TAG_NAME.toUpperCase()]);
 
-  return undefined;
+  annotateDOM(textNodesFromDOM.walk(document.body), match);
+  textNodesFromDOM.watchDOM((ns) => annotateDOM(ns, match));
+  textNodesFromDOM.watchScroll((ns) => annotateDOM(ns, match));
 }
 
-function cbFunctionWrapper(text) {
-  return new Promise((resolve) => {
-    getPhrasioIdsFromTextWithWorker(window.ambossAnnotationOptions.locale, text, (data) => resolve(data));
+export async function getIdsFromText(annotationOptions = window[GLOBAL_OPTIONS_OBJECT]) {
+  const { locale, annotationVariant } = annotationOptions
+  const terms = await import(locale === 'de' ? PATH_TO_DE_DE_TERMS : PATH_TO_US_EN_TERMS )
+  const match = new Match(new Map(terms.default), null, {
+    tag: MATCH_WRAPPER_TAG_NAME,
+    getAttrs: id => `${MATCH_WRAPPER_CONTENT_ID_ATTR}="${id}" data-annotation-variant="${annotationVariant}"`
   });
-}
 
-export async function getPhrasiosFromText(
-  text = getAllTextFromPage()
-) {
-  if (!text) return []
-  const listOfPhrasioIds = await cbFunctionWrapper(text)
-  return listOfPhrasioIds
+  return match.extractMatchIds(document.documentElement.innerText)
 }
