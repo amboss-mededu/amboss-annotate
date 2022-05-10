@@ -20,6 +20,7 @@ function normaliseData(data, lang) {
     return acc
   }, [])
 }
+
 function filterAndObjectifyPhrasios(normalisedData) {
   return normalisedData.reduce((acc, cur) => {
     const { id, title, description, etymology, destinations } = cur
