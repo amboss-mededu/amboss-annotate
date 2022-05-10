@@ -5,7 +5,7 @@ import {
   TOOLTIP_OPENED_EVENT,
   ARROW_ID_SELECTOR
 } from './consts'
-import {track} from './utils'
+import {track} from './'
 
 import styles from "./anchor-custom-element.css";
 
@@ -139,7 +139,6 @@ class Anchor extends HTMLElement {
     }
 
     this.arrow = this.content.shadowRoot.querySelector(ARROW_ID_SELECTOR)
-    console.log('|> this.arrow ===> ', this.arrow);
     if (!this.arrow) {
       this.open();
       return undefined

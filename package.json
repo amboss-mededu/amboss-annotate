@@ -28,7 +28,7 @@
     "registry": "https://npm.pkg.github.com/"
   },
   "scripts": {
-    "clean": "rm -rf ./src/phrasios_de.json ./src/phrasios_us.json ./src/terms_de_de.json ./src/terms_us_en.json",
+    "clean": "rm -rf dist ./src/phrasios_de.json ./src/phrasios_us.json ./src/terms_de_de.json ./src/terms_us_en.json",
     "createTermToIdMap": "node createTermToIdMap.mjs",
     "createIdToPhrasioMap": "node createIdToPhrasioMap.mjs",
     "createIdToPhrasioMap:empty": "node createIdToPhrasioMapEmpty.mjs",
@@ -52,7 +52,7 @@
     "vite": "^2.9.8"
   },
   "dependencies": {
-    "@amboss-mededu/amboss-phrasio": "^0.0.57",
+    "@amboss-mededu/amboss-phrasio": "^0.0.58",
     "@fairfox/adorn": "^1.0.20",
     "@popperjs/core": "^2.11.5"
   }
