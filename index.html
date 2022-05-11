@@ -7,7 +7,20 @@
 <body>
 <h1>Module import</h1>
 <p>
-  <b class="amboss-ignore">Angiotensin-converting enzyme</b>
+  <b>Angiotensin-converting enzyme</b>
+  <a href="#" title="Angiotensin-converting enzyme">Angiotensin-converting enzyme</a> Angiotensin-converting enzyme covid-19
+  <sup id="abc" class="reference"><a href="#">Angiotensin-converting enzyme</a></sup>
+</p>
+
+<p>
+  <b>Angiotensin-converting enzyme</b>
+  <a href="#">Angiotensin-converting enzyme</a> Angiotensin-converting
+  enzyme
+  <sup><a href="#">Angiotensin-converting enzyme</a></sup>
+</p>
+
+<p>
+  <b>Angiotensin-converting enzyme</b>
   <a href="#" title="Angiotensin-converting enzyme">Angiotensin-converting enzyme</a> Angiotensin-converting
   enzyme covid-19
   <sup id="abc" class="reference"><a href="#">Angiotensin-converting enzyme</a></sup>
@@ -19,7 +32,58 @@
   enzyme
   <sup><a href="#">Angiotensin-converting enzyme</a></sup>
 </p>
+<p>
+  <b>Angiotensin-converting enzyme</b>
+  <a href="#" title="Angiotensin-converting enzyme">Angiotensin-converting enzyme</a> Angiotensin-converting
+  enzyme covid-19
+  <sup id="abc" class="reference"><a href="#">Angiotensin-converting enzyme</a></sup>
+</p>
 
+<p>
+  <b>Angiotensin-converting enzyme</b>
+  <a href="#">Angiotensin-converting enzyme</a> Angiotensin-converting
+  enzyme
+  <sup><a href="#">Angiotensin-converting enzyme</a></sup>
+</p>
+<p>
+  <b>Angiotensin-converting enzyme</b>
+  <a href="#" title="Angiotensin-converting enzyme">Angiotensin-converting enzyme</a> Angiotensin-converting
+  enzyme covid-19
+  <sup id="abc" class="reference"><a href="#">Angiotensin-converting enzyme</a></sup>
+</p>
+
+<p>
+  <b>Angiotensin-converting enzyme</b>
+  <a href="#">Angiotensin-converting enzyme</a> Angiotensin-converting
+  enzyme
+  <sup><a href="#">Angiotensin-converting enzyme</a></sup>
+</p>
+<p>
+  <b>Angiotensin-converting enzyme</b>
+  <a href="#" title="Angiotensin-converting enzyme">Angiotensin-converting enzyme</a> Angiotensin-converting
+  enzyme covid-19
+  <sup id="abc" class="reference"><a href="#">Angiotensin-converting enzyme</a></sup>
+</p>
+
+<p>
+  <b>Angiotensin-converting enzyme</b>
+  <a href="#">Angiotensin-converting enzyme</a> Angiotensin-converting
+  enzyme
+  <sup><a href="#">Angiotensin-converting enzyme</a></sup>
+</p>
+<p>
+  <b>Angiotensin-converting enzyme</b>
+  <a href="#" title="Angiotensin-converting enzyme">Angiotensin-converting enzyme</a> Angiotensin-converting
+  enzyme covid-19
+  <sup id="abc" class="reference"><a href="#">Angiotensin-converting enzyme</a></sup>
+</p>
+
+<p>
+  <b>Angiotensin-converting enzyme</b>
+  <a href="#">Angiotensin-converting enzyme</a> Angiotensin-converting
+  enzyme
+  <sup><a href="#">Angiotensin-converting enzyme</a></sup>
+</p>
 <ul class="calc-list calc-list--no-mobile-top-border" data-reactid="235">
   <li class="calc-item" data-reactid="236">
     <a href="/creatinine-clearance-cockcroft-gault-equation" class="index_most-popular_calcItem" data-reactid="237">
@@ -54,7 +118,13 @@
 </ul>
 <script type="module">
   import { annotate, initAnnotation } from './src'
-  initAnnotation({locale: 'us', annotationVariant: 'underline', theme: 'light-theme'}).then((match) => annotate(match))
+  const match = await initAnnotation({locale: 'us', annotationVariant: 'underline', theme: 'light-theme'})
+  annotate(match)
+</script>
+<script type="module">
+  import { createMatch, getIdsFromText } from './src'
+  const match = await createMatch({locale: 'us', annotationVariant: 'underline', theme: 'light-theme', MATCH_WRAPPER_TAG_NAME: ''})
+  document.onclick = () => console.log(getIdsFromText(match))
 </script>
 </body>
 </html>
