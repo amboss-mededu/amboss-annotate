@@ -81,8 +81,9 @@ export async function initAnnotation(passedInOptions) {
     return createMatch(opts)
 }
 
-export async function createMatch(opts) {
-    const {locale, annotationVariant, PATH_TO_DE_DE_TERMS, PATH_TO_US_EN_TERMS} = opts
+export async function createMatch(passedInOptions) {
+    const opts = {...defaultOpts, ...passedInOptions}
+    const {locale, annotationVariant, PATH_TO_DE_DE_TERMS, PATH_TO_US_EN_TERMS } = opts
     const terms = await import(locale === 'de' ? PATH_TO_DE_DE_TERMS : PATH_TO_US_EN_TERMS)
     return new Match(new Map(terms.default), null, {
         tag: MATCH_WRAPPER_TAG_NAME,
@@ -98,5 +99,7 @@ export async function annotate(match) {
 }
 
 export async function getIdsFromText(match) {
-    return match.extractMatchIds(document.documentElement.innerText)
+    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/innerText
+    const text = document.body.textContent
+    return match.extractMatchIds(text)
 }
