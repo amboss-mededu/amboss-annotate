@@ -33,6 +33,7 @@
     "createIdToPhrasioMap": "node createIdToPhrasioMap.mjs",
     "createIdToPhrasioMap:empty": "node createIdToPhrasioMapEmpty.mjs",
     "linkLocalAmbossPhrasio": "ln -sF /Users/ajt/projects/amboss-phrasio/dist /Users/ajt/projects/amboss-annotate/node_modules/@amboss-mededu/amboss-phrasio",
+    "linkLocalAdorn": "ln -sF /Users/ajt/projects/adorn/packages/annotate/build /Users/ajt/projects/amboss-annotate/node_modules/@fairfox/adorn",
     "build": "npm run clean && npm run createTermToIdMap && npm run createIdToPhrasioMap:empty && vite build",
     "build:offline": "npm run clean && npm run createTermToIdMap && npm run createIdToPhrasioMap && vite build",
     "build:local": "vite build",
