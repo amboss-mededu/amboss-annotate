@@ -16,10 +16,10 @@ jobs:
           node-version: 16
           registry-url: https://npm.pkg.github.com/
           scope: '@amboss-mededu'
-      - run: npm ci --ignore-scripts
       - run: |
           git config user.email "coding@amboss.com"
           git config user.name "AMBOSS"
+      - run: npm ci --ignore-scripts
       - run: npm version patch
       - run: git push --tags && git push
       - run: npm run build
