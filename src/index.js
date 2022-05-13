@@ -66,6 +66,7 @@ export async function initAnnotation(passedInOptions) {
 
     if(window.customElements.get(MATCH_WRAPPER_TAG_NAME) === undefined)
         window.customElements.define(MATCH_WRAPPER_TAG_NAME, AnnotationAnchor)
+    window.ambossAnnotateTrack = track
 
     // create the tooltip content component and place in the DOM
     const phrasios = await import(locale === 'de' ? PATH_TO_PHRASIOS_DE : PATH_TO_PHRASIOS_US)
@@ -88,7 +89,8 @@ export async function createMatch(passedInOptions) {
     const terms = await import(locale === 'de' ? PATH_TO_DE_DE_TERMS : PATH_TO_US_EN_TERMS)
     return new Match(new Map(terms.default), null, {
         tag: MATCH_WRAPPER_TAG_NAME,
-        getAttrs: id => `${MATCH_WRAPPER_CONTENT_ID_ATTR}="${id}" data-annotation-variant="${annotationVariant}"`
+        getAttrs: id => [[MATCH_WRAPPER_CONTENT_ID_ATTR, id], ['data-annotation-variant', annotationVariant]],
+        shouldSkipChars: true
     })
 }
 

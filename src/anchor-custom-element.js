@@ -117,9 +117,10 @@ class Anchor extends HTMLElement {
   }
 
   t() {
-    track([TOOLTIP_OPENED_EVENT, {
-      contentId: this.contentId,
-    }]);
+    if (typeof window !== undefined && typeof window.ambossAnnotateTrack !== undefined)
+      window.ambossAnnotateTrack([TOOLTIP_OPENED_EVENT, {
+        contentId: this.contentId,
+      }]);
   }
 
   open() {
