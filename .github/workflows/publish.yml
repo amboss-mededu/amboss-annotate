@@ -17,12 +17,16 @@ jobs:
           registry-url: https://npm.pkg.github.com/
           scope: '@amboss-mededu'
       - run: |
-          git config user.email "coding@amboss.com"
-          git config user.name "AMBOSS"
+          git config user.email "alexjeffcott@gmail.com"
+          git config user.name "Alex Jeffcott"
       - run: npm ci --ignore-scripts
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.ORG_TOKEN}}
       - run: npm version patch
       - run: git push --tags && git push
       - run: npm run build
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          
+          
