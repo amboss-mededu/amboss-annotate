@@ -4,3 +4,5 @@ dist
 .code
 .env
 .DS_Store
+src/phrasios*
+src/terms*
