@@ -44,12 +44,12 @@ function normalisePhrasio(phrasioRAW, locale, campaign='') {
     }
 }
 
-export const track = (trackingProperties) => console.info('annotation track', trackingProperties)
-
 const defaultOpts = {
     locale: 'us',
     annotationVariant: 'underline',
     theme: 'light-theme',
+    campaign: '',
+    track: (trackingProperties) => console.info('annotation track', trackingProperties),
     PATH_TO_DE_DE_TERMS: __PATH_TO_DE_DE_TERMS,
     PATH_TO_US_EN_TERMS: __PATH_TO_US_EN_TERMS,
     PATH_TO_PHRASIOS_US: __PATH_TO_PHRASIOS_US,
@@ -58,7 +58,7 @@ const defaultOpts = {
 
 export async function initAnnotation(passedInOptions) {
     const opts = {...defaultOpts, ...passedInOptions}
-    const {locale, theme, PATH_TO_PHRASIOS_DE, PATH_TO_PHRASIOS_US } = opts
+    const {locale, theme, PATH_TO_PHRASIOS_DE, PATH_TO_PHRASIOS_US, track, getContent } = opts
 
     // initial setup of custom elements
     if(window.customElements.get(CARD_TAG_NAME) === undefined)
@@ -69,9 +69,10 @@ export async function initAnnotation(passedInOptions) {
 
     // create the tooltip content component and place in the DOM
     const phrasios = await import(locale === 'de' ? PATH_TO_PHRASIOS_DE : PATH_TO_PHRASIOS_US)
-    const getContent = async (id) => normalisePhrasio(phrasios.default[id], locale)
+    const defaultGetContent = async (id) => normalisePhrasio(phrasios.default[id], locale)
+    const _getContent = getContent || defaultGetContent
 
-    const contentCard = new ContentCard(getContent, track)
+    const contentCard = new ContentCard(_getContent, track)
     contentCard.setAttribute('data-locale', locale)
     contentCard.setAttribute('data-theme', theme)
     contentCard.setAttribute(MATCH_WRAPPER_CONTENT_ID_ATTR, '')
