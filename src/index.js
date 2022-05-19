@@ -1,21 +1,22 @@
+import '@webcomponents/webcomponentsjs'
 import {
     TextNodesFromDOM,
     Match,
-    annotateDOM,
+    annotateDOM
 } from "@fairfox/adorn";
 import { ContentCard } from '@amboss-mededu/amboss-phrasio';
 import AnnotationAnchor from "./anchor-custom-element";
+import termsDe from './terms_de_de.json'
+import termsUsEn from './terms_us_en.json'
+import phrasiosUs from './phrasios_us.json'
+import phrasiosDe from './phrasios_de.json'
 import {
     CARD_TAG_NAME,
     MATCH_WRAPPER_CONTENT_ID_ATTR,
-    MATCH_WRAPPER_TAG_NAME,
-    __PATH_TO_DE_DE_TERMS,
-    __PATH_TO_US_EN_TERMS,
-    __PATH_TO_PHRASIOS_US,
-    __PATH_TO_PHRASIOS_DE
+    MATCH_WRAPPER_TAG_NAME
 } from './consts'
 
-function generateHref({ particleEid, articleEid, title, locale, campaign }) {
+export function generateHref({ particleEid, articleEid, title, locale, campaign }) {
     const replaceSpacesWithUnderscores = (str) => str.replace(/ /g, '_')
     const urlify = (str) =>
         encodeURIComponent(replaceSpacesWithUnderscores(str)).replace(/[!'()*]/g, (c) => '%' + c.charCodeAt(0).toString(16))
@@ -25,7 +26,7 @@ function generateHref({ particleEid, articleEid, title, locale, campaign }) {
     return `https://next.amboss.com/${locale}/article/${articleEid}${utmString}${anchorString}`
 }
 
-function normalisePhrasio(phrasioRAW, locale, campaign='') {
+export function normalisePhrasio(phrasioRAW, locale, campaign='') {
     const destinations = Array.isArray(phrasioRAW.destinations) ? phrasioRAW.destinations : []
     return {
         title: phrasioRAW.title || '',
@@ -50,46 +51,55 @@ const defaultOpts = {
     theme: 'light-theme',
     campaign: '',
     track: (trackingProperties) => console.info('annotation track', trackingProperties),
-    PATH_TO_DE_DE_TERMS: __PATH_TO_DE_DE_TERMS,
-    PATH_TO_US_EN_TERMS: __PATH_TO_US_EN_TERMS,
-    PATH_TO_PHRASIOS_US: __PATH_TO_PHRASIOS_US,
-    PATH_TO_PHRASIOS_DE: __PATH_TO_PHRASIOS_DE
+    getPhrasios: async (locale) => locale === 'de' ? phrasiosDe : phrasiosUs,
+    getTerms: async (locale) => locale === 'de' ? termsDe : termsUsEn
 }
 
-export async function initAnnotation(passedInOptions) {
-    const opts = {...defaultOpts, ...passedInOptions}
-    const {locale, theme, PATH_TO_PHRASIOS_DE, PATH_TO_PHRASIOS_US, track, getContent } = opts
+const createOptions = async (passedInOptions, win) => {
+    const opts = {...defaultOpts, ...win.ambossAnnotationAdaptor || [], ...passedInOptions}
+    opts.getContent = async (id) => opts.getPhrasios(opts.locale).then((phrasios) => phrasios[id] && normalisePhrasio(phrasios[id], opts.locale, opts.campaign))
+    win.ambossAnnotationAdaptor = opts
+    return opts
+}
 
-    // initial setup of custom elements
-    if(window.customElements.get(CARD_TAG_NAME) === undefined)
-        window.customElements.define(CARD_TAG_NAME, ContentCard)
-
-    if(window.customElements.get(MATCH_WRAPPER_TAG_NAME) === undefined)
-        window.customElements.define(MATCH_WRAPPER_TAG_NAME, AnnotationAnchor)
-    window.ambossAnnotateTrack = track
+export async function initAnnotation(passedInOptions, win) {
+    const opts = await createOptions(passedInOptions, win)
 
     // create the tooltip content component and place in the DOM
-    const phrasios = await import(locale === 'de' ? PATH_TO_PHRASIOS_DE : PATH_TO_PHRASIOS_US)
-    const defaultGetContent = async (id) => normalisePhrasio(phrasios.default[id], locale)
-    const _getContent = getContent || defaultGetContent
+    if (!win.customElements.get(CARD_TAG_NAME)) {
+        win.customElements.define(CARD_TAG_NAME, ContentCard)
+    }
 
-    const contentCard = new ContentCard(_getContent, track)
-    contentCard.setAttribute('data-locale', locale)
-    contentCard.setAttribute('data-theme', theme)
-    contentCard.setAttribute(MATCH_WRAPPER_CONTENT_ID_ATTR, '')
-    document.body.appendChild(contentCard)
+    if (!win.document.getElementsByTagName(CARD_TAG_NAME).length) {
+        const contentCard = win.document.createElement(CARD_TAG_NAME)
+        contentCard.track = opts.track
+        contentCard.getContent = opts.getContent
+        contentCard.setAttribute('data-locale', opts.locale)
+        contentCard.setAttribute('data-theme', opts.theme)
+        contentCard.setAttribute(MATCH_WRAPPER_CONTENT_ID_ATTR, '')
+        win.document.body.appendChild(contentCard)
+    }
 
-    // set up Match
-    return createMatch(opts)
+    if (!win.customElements.get(MATCH_WRAPPER_TAG_NAME))
+        win.customElements.define(MATCH_WRAPPER_TAG_NAME, AnnotationAnchor)
+
+    if (!win.document.getElementsByTagName(MATCH_WRAPPER_TAG_NAME).length) {
+        const annotationAnchor = win.document.createElement(MATCH_WRAPPER_TAG_NAME)
+        win.document.body.appendChild(annotationAnchor)
+    }
+
+    return createMatch(opts, win)
 }
 
-export async function createMatch(passedInOptions) {
-    const opts = {...defaultOpts, ...passedInOptions}
-    const {locale, annotationVariant, PATH_TO_DE_DE_TERMS, PATH_TO_US_EN_TERMS } = opts
-    const terms = await import(locale === 'de' ? PATH_TO_DE_DE_TERMS : PATH_TO_US_EN_TERMS)
-    return new Match(new Map(terms.default), null, {
+export async function createMatch(passedInOptions, win) {
+    const opts = await createOptions(passedInOptions, win)
+
+    const terms = await opts.getTerms(opts.locale)
+    return new Match(new Map(terms), null, {
         tag: MATCH_WRAPPER_TAG_NAME,
-        getAttrs: id => [[MATCH_WRAPPER_CONTENT_ID_ATTR, id], ['data-annotation-variant', annotationVariant]],
+        element: AnnotationAnchor,
+        getAttrs: id => [[MATCH_WRAPPER_CONTENT_ID_ATTR, id], ['data-annotation-variant', opts.annotationVariant]],
+        elementMethods: [['track', opts.track]],
         shouldSkipChars: true
     })
 }
@@ -106,3 +116,5 @@ export async function getIdsFromText(match) {
     const text = document.body.textContent
     return match.extractMatchIds(text)
 }
+
+export { ContentCard, AnnotationAnchor }

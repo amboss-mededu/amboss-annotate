@@ -64,13 +64,13 @@ enzyme <sup><a href="#">Angiotensin-converting enzyme</a></sup>
 </ul>
 <script type="module">
   import { annotate, initAnnotation } from './src'
-  const match = await initAnnotation({locale: 'us', annotationVariant: 'underline', theme: 'light-theme'})
+  const match = await initAnnotation({locale: 'us', annotationVariant: 'underline', theme: 'light-theme'}, window)
   annotate(match)
 </script>
-<script type="module">
-  import { createMatch, getIdsFromText } from './src'
-  const match = await createMatch({})
-  document.onclick = () => console.log(getIdsFromText(match))
-</script>
+<!--<script type="module">-->
+<!--  import { createMatch, getIdsFromText } from './src'-->
+<!--  const match = await createMatch({})-->
+<!--  document.onclick = () => console.log(getIdsFromText(match))-->
+<!--</script>-->
 </body>
 </html>

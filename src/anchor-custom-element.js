@@ -1,54 +1,51 @@
-import { createPopper } from "@popperjs/core";
+import { createPopper } from '@popperjs/core';
 import {
   CARD_TAG_NAME,
   MATCH_WRAPPER_CONTENT_ID_ATTR,
   TOOLTIP_OPENED_EVENT,
   ARROW_ID_SELECTOR
 } from './consts'
-import {track} from './'
-
-import styles from "./anchor-custom-element.css";
 
 function getPopperOptions(arrow) {
   return {
-    placement: "auto",
+    placement: 'auto',
     modifiers: [
-      { name: "eventListeners", enabled: true },
+      { name: 'eventListeners', enabled: true },
       {
-        name: "offset",
+        name: 'offset',
         enabled: true,
         options: {
-          offset: [0, 8],
-        },
+          offset: [0, 8]
+        }
       },
       {
-        name: "arrow",
+        name: 'arrow',
         options: {
-          element: arrow,
-        },
+          element: arrow
+        }
       },
       {
         name: 'flip',
         enabled: true,
         options: {
           allowedAutoPlacements: ['top', 'bottom'],
-          rootBoundary: 'viewport',
-        },
+          rootBoundary: 'viewport'
+        }
       },
       {
-        name: "preventOverflow",
+        name: 'preventOverflow',
         enabled: true,
         options: {
-          boundariesElement: "viewport",
-        },
-      },
-    ],
+          boundariesElement: 'viewport'
+        }
+      }
+    ]
   };
 }
 
-class Anchor extends HTMLElement {
+export default class Anchor extends HTMLElement {
   static get observedAttributes() {
-    return [ MATCH_WRAPPER_CONTENT_ID_ATTR ];
+    return [MATCH_WRAPPER_CONTENT_ID_ATTR];
   }
 
   get contentId() {
@@ -57,75 +54,65 @@ class Anchor extends HTMLElement {
 
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
+    this.attachShadow({ mode: 'open' });
     this.open = this.open.bind(this);
-    this.t = this.t.bind(this);
     this.close = this.close.bind(this);
+    this.track = (args) => console.log('Track method placeholder', args);
     this.popperInstance = null;
     this.content = document.querySelector(CARD_TAG_NAME);
-    this.arrow = this.content.shadowRoot.querySelector(ARROW_ID_SELECTOR)
-    this.target = document.createElement("span");
+    this.arrow = this.content?.shadowRoot.querySelector(ARROW_ID_SELECTOR);
+    this.shadowRoot.innerHTML = '<span><slot></slot></span>'
+    const slot = this.shadowRoot.querySelector('slot');
+    this.target = this.shadowRoot.querySelectorAll('span')[0];
+
+    slot.addEventListener('slotchange', () => this.addListeners(), { once: true });
+
+    const stylesheet = new CSSStyleSheet();
+    stylesheet.insertRule(
+        ':host-context([data-annotation-variant="underline"]) > span { border-bottom: solid 1px #0aa6b8}'
+    );
+    stylesheet.insertRule(
+        ':host-context([data-annotation-variant="none"]) > span {border-bottom: initial;pointer-events: none;}'
+    );
+    // @ts-ignore
+    this.shadowRoot.adoptedStyleSheets = [stylesheet];
   }
 
-  connectedCallback() {
-    const styleElem = document.createElement("style");
-    styleElem.innerText = styles;
-    this.shadowRoot.appendChild(styleElem);
-    this.render();
-  }
-
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (oldValue !== newValue) {
-      this.render();
-    }
-  }
-
-  render() {
-    if(!this.childNodes[0]) return undefined;
-    this.target.innerText = this.childNodes[0].textContent
-    this.shadowRoot.appendChild(this.target)
-
-    this.target.addEventListener("mouseover", (event) => {
+  addListeners() {
+    this.target.addEventListener('mouseover', (event) => {
       event.stopPropagation();
       this.open();
 
       this.content.addEventListener(
-        "mouseover",
-        (event) => {
-          event.stopPropagation();
-          this.content.setAttribute("show-popper", "");
-        },
-        { once: true }
+          'mouseover',
+          (event) => {
+            event.stopPropagation();
+            this.content.setAttribute('show-popper', '');
+          },
+          { once: true }
       );
 
       this.content.addEventListener(
-        "mouseleave",
-        (event) => {
-          event.stopPropagation();
-          this.content.removeAttribute("show-popper");
-          this.close();
-        },
-        { once: true }
+          'mouseleave',
+          (event) => {
+            event.stopPropagation();
+            this.content.removeAttribute('show-popper');
+            this.close();
+          },
+          { once: true }
       );
     });
 
-    this.target.addEventListener("mouseleave", (event) => {
+    this.target.addEventListener('mouseleave', (event) => {
       event.stopPropagation();
-      this.content.removeAttribute("show-popper");
+      this.content.removeAttribute('show-popper');
       this.close();
     });
   }
 
-  t() {
-    if (typeof window !== undefined && typeof window.ambossAnnotateTrack !== undefined)
-      window.ambossAnnotateTrack([TOOLTIP_OPENED_EVENT, {
-        contentId: this.contentId,
-      }]);
-  }
-
   open() {
     if (!this.content) {
-      return undefined
+      return undefined;
     }
 
     if (this.popperInstance !== null) {
@@ -135,29 +122,30 @@ class Anchor extends HTMLElement {
 
     this.content.setAttribute(MATCH_WRAPPER_CONTENT_ID_ATTR, this.contentId);
     if (this.content.getAttribute(MATCH_WRAPPER_CONTENT_ID_ATTR) !== this.contentId) {
-      this.open()
-      return undefined
+      this.open();
+      return undefined;
     }
 
-    this.arrow = this.content.shadowRoot.querySelector(ARROW_ID_SELECTOR)
+    this.arrow = this.content.shadowRoot.querySelector(ARROW_ID_SELECTOR);
     if (!this.arrow) {
       this.open();
-      return undefined
+      return undefined;
     }
 
-    this.popperInstance = createPopper(
-      this.target,
-      this.content,
-      getPopperOptions(this.arrow)
-    );
+    this.popperInstance = createPopper(this.target, this.content, getPopperOptions(this.arrow));
     this.popperInstance.forceUpdate();
-    this.content.setAttribute("show-popper", "");
-    this.t();
+    this.content.setAttribute('show-popper', '');
+    this.track([
+      TOOLTIP_OPENED_EVENT,
+      {
+        contentId: this.contentId || ''
+      }
+    ]);
   }
 
   close() {
     setTimeout(() => {
-      if (!this.content.hasAttribute("show-popper")) {
+      if (this.content !== null && !this.content.hasAttribute('show-popper')) {
         this.content.removeAttribute(MATCH_WRAPPER_CONTENT_ID_ATTR);
         if (this.popperInstance !== null) {
           this.popperInstance.destroy();
@@ -167,5 +155,3 @@ class Anchor extends HTMLElement {
     }, 50);
   }
 }
-
-export default Anchor;
