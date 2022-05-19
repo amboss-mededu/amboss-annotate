@@ -4,8 +4,7 @@ import {
     Match,
     annotateDOM
 } from "@fairfox/adorn";
-import { ContentCard } from '@amboss-mededu/amboss-phrasio';
-import AnnotationAnchor from "./anchor-custom-element";
+import { ContentCard, AnnotationAnchor } from '@amboss-mededu/amboss-phrasio';
 import termsDe from './terms_de_de.json'
 import termsUsEn from './terms_us_en.json'
 import phrasiosUs from './phrasios_us.json'
@@ -76,6 +75,7 @@ export async function initAnnotation(passedInOptions, win) {
         contentCard.getContent = opts.getContent
         contentCard.setAttribute('data-locale', opts.locale)
         contentCard.setAttribute('data-theme', opts.theme)
+        contentCard.setAttribute('no-arrow', '')
         contentCard.setAttribute(MATCH_WRAPPER_CONTENT_ID_ATTR, '')
         win.document.body.appendChild(contentCard)
     }
