@@ -1,0 +1,55 @@
+{
+  "name": "@amboss-mededu/amboss-annotate",
+  "version": "0.0.48",
+  "description": "DOM annotation",
+  "author": "Alex Jeffcott",
+  "license": "MIT",
+  "lockfileVerion": 1,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amboss-mededu/amboss-annotate.git"
+  },
+  "bugs": {
+    "url": "https://github.com/amboss-mededu/amboss-annotate/issues"
+  },
+  "homepage": "https://github.com/amboss-mededu/amboss-annotate#readme",
+  "files": [
+    "dist"
+  ],
+  "module": "./dist/amboss-annotate.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/amboss-annotate.es.js"
+    }
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "scripts": {
+    "clean": "rm -rf dist ./src/phrasios_de.json ./src/phrasios_us.json ./src/terms_de_de.json ./src/terms_us_en.json",
+    "createTermToIdMap": "dotenv -- cross-var node createTermToIdMap.mjs",
+    "createIdToPhrasioMap": "dotenv -- cross-var node createIdToPhrasioMap.mjs",
+    "createIdToPhrasioMap:empty": "dotenv -- cross-var node createIdToPhrasioMapEmpty.mjs",
+    "linkLocalAmbossPhrasio": "ln -sF /Users/ajt/projects/amboss-phrasio/dist /Users/ajt/projects/amboss-annotate/node_modules/@amboss-mededu/amboss-phrasio",
+    "linkLocalAdorn": "ln -sF /Users/ajt/projects/adorn/packages/annotate/build /Users/ajt/projects/amboss-annotate/node_modules/@fairfox/adorn",
+    "build:local": "dotenv -- cross-var vite build",
+    "build": "npm run clean && npm run createTermToIdMap && npm run createIdToPhrasioMap && npm run build:local",
+    "run:local": "dotenv -- cross-var vite"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.33",
+    "cross-var": "^1.1.0",
+    "dotenv": "^16.0.1",
+    "dotenv-cli": "^5.1.0",
+    "eslint": "^8.15.0",
+    "http-server": "^14.1.0",
+    "node-fetch": "^3.2.4",
+    "typescript": "^4.6.4",
+    "vite": "^2.9.9"
+  },
+  "dependencies": {
+    "@amboss-mededu/amboss-phrasio": "^0.0.63",
+    "@fairfox/adorn": "^1.0.23",
+    "@webcomponents/webcomponentsjs": "^2.6.0"
+  }
+}

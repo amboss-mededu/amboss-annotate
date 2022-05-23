@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='UTF-8'>
+  <title>Test page for AMBOSS annotate</title>
+</head>
+<body>
+<h1>Module import</h1>
+<p>
+  <b>Angiotensin-converting enzyme</b> <a href="#" title="Angiotensin-converting enzyme">Angiotensin-converting enzyme</a> Angiotensin-converting enzyme <sup id="abc" class="reference"><a href="#">Angiotensin-converting enzyme</a></sup>
+</p>
+
+<p>
+  <b>Angiotensin-converting enzyme</b> <a href="#">Angiotensin-converting enzyme</a> The follow match has a "\\n" before "enzyme" Angiotensin-converting
+enzyme <sup><a href="#">Angiotensin-converting enzyme</a></sup>
+</p>
+
+<p>
+  <b>Angiotensin-converting enzyme</b> <a href="#">Angiotensin-converting enzyme</a> Angiotensin-converting enzyme <sup><a href="#">Angiotensin-converting enzyme</a></sup>
+</p>
+
+<p>
+  <b>Angiotensin-converting enzyme</b> <a href="#">Angiotensin-converting enzyme</a> Angiotensin-converting enzyme <sup><a href="#">Angiotensin-converting enzyme</a></sup>
+</p>
+<p>
+  <b>Angiotensin-converting enzyme</b> <a href="#" title="Angiotensin-converting enzyme">Angiotensin-converting enzyme</a> Angiotensin-converting enzyme covid-19 <sup id="abc" class="reference"><a href="#">Angiotensin-converting enzyme</a></sup>
+</p>
+
+<p>
+  <b>Angiotensin-converting enzyme</b> <a href="#">Angiotensin-converting enzyme</a> Angiotensin-converting enzyme <sup><a href="#">Angiotensin-converting enzyme</a></sup>
+</p>
+
+<ul class="calc-list calc-list--no-mobile-top-border" data-reactid="235">
+  <li class="calc-item" data-reactid="236">
+    <a href="/creatinine-clearance-cockcroft-gault-equation" class="index_most-popular_calcItem" data-reactid="237">
+      <div class="calc-item__top" data-reactid="238">
+        <p class="calc-item__name index_most-popular_calcItem" style="display:inline;padding-right:15px;" data-reactid="239">
+          Creatinine Clearance (Cockcroft-Gault Equation)
+        </p>
+        <div data-reactid="240">
+        <span class="calc-item__tag calc-status" data-reactid="241"></span>
+          <div class="calc-item__fav-cont" value="43" data-reactid="242"></div>
+        </div>
+      </div>
+      <div class="calc-item__bottom" data-reactid="247">
+        <div class="calc-item__desc-row" data-reactid="248">
+        <p class="calc-item__desc index_most-popular_calcItem" data-reactid="249">Calculates CrCl according to the Cockcroft-Gault equation.</p>
+        <div class="row-credit-container" data-reactid="250">
+      </div></div></div></a>
+  </li>
+  <li class="calc-item" data-reactid="251">
+    <a href="/cha2ds2-vasc-score-atrial-fibrillation-stroke-risk" class="index_most-popular_calcItem" data-reactid="252">
+    <div class="calc-item__top" data-reactid="253"><p class="calc-item__name index_most-popular_calcItem" style="display:inline;padding-right:15px;" data-reactid="254">CHA₂DS₂-VASc Score for Atrial Fibrillation Stroke Risk</p>
+      <div data-reactid="255">
+      <span class="calc-item__tag calc-status" data-reactid="256"></span>
+      <div class="calc-item__fav-cont" value="801" data-reactid="257"></div>
+    </div>
+    </div>
+    <div class="calc-item__bottom" data-reactid="607">
+    <div class="calc-item__desc-row" data-reactid="608">
+    <p class="calc-item__desc index_most-popular_calcItem" data-reactid="609">Identifies high-risk patients for in-hospital mortality with suspected infection outside the ICU.</p>
+    <div class="row-credit-container" data-reactid="610">
+  </div></div></div></a></li>
+</ul>
+<script type="module">
+  import { annotate, initAnnotation } from './src'
+  const match = await initAnnotation({locale: 'us', annotationVariant: 'underline', theme: 'light-theme'}, window)
+  annotate(match)
+</script>
+<!--<script type="module">-->
+<!--  import { createMatch, getIdsFromText } from './src'-->
+<!--  const match = await createMatch({})-->
+<!--  document.onclick = () => console.log(getIdsFromText(match))-->
+<!--</script>-->
+</body>
+</html>

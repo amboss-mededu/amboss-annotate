@@ -1,0 +1,33 @@
+name: publish Package
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish-gpr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          registry-url: https://npm.pkg.github.com/
+          scope: '@amboss-mededu'
+      - run: |
+          git config user.name "$(git log -n 1 --pretty=format:%an)"
+          git config user.email "$(git log -n 1 --pretty=format:%ae)"
+      - run: npm ci --ignore-scripts
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.ORG_TOKEN}}
+      - run: npm version patch
+      - run: git push --tags && git push
+      - run: npm run build
+        env:
+          PHRASIO_DUMP_URL_DE: ${{secrets.PHRASIO_DUMP_URL_DE}}
+          PHRASIO_DUMP_URL_US: ${{secrets.PHRASIO_DUMP_URL_US}}
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}

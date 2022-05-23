@@ -1,0 +1,8 @@
+node_modules
+dist
+.idea
+.code
+.env
+.DS_Store
+src/phrasios*
+src/terms*
