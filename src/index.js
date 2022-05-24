@@ -75,18 +75,12 @@ export async function initAnnotation(passedInOptions, win) {
         contentCard.getContent = opts.getContent
         contentCard.setAttribute('data-locale', opts.locale)
         contentCard.setAttribute('data-theme', opts.theme)
-        contentCard.setAttribute('no-arrow', '')
         contentCard.setAttribute(MATCH_WRAPPER_CONTENT_ID_ATTR, '')
         win.document.body.appendChild(contentCard)
     }
 
     if (!win.customElements.get(MATCH_WRAPPER_TAG_NAME))
         win.customElements.define(MATCH_WRAPPER_TAG_NAME, AnnotationAnchor)
-
-    if (!win.document.getElementsByTagName(MATCH_WRAPPER_TAG_NAME).length) {
-        const annotationAnchor = win.document.createElement(MATCH_WRAPPER_TAG_NAME)
-        win.document.body.appendChild(annotationAnchor)
-    }
 
     return createMatch(opts, win)
 }
