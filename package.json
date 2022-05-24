@@ -48,7 +48,7 @@
     "vite": "^2.9.9"
   },
   "dependencies": {
-    "@amboss-mededu/amboss-phrasio": "^0.0.63",
+    "@amboss-mededu/amboss-phrasio": "^0.0.64",
     "@fairfox/adorn": "^1.0.23",
     "@webcomponents/webcomponentsjs": "^2.6.0"
   }
