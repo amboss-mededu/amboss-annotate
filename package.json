@@ -30,8 +30,6 @@
     "createTermToIdMap": "dotenv -- cross-var node createTermToIdMap.mjs",
     "createIdToPhrasioMap": "dotenv -- cross-var node createIdToPhrasioMap.mjs",
     "createIdToPhrasioMap:empty": "dotenv -- cross-var node createIdToPhrasioMapEmpty.mjs",
-    "linkLocalAmbossPhrasio": "ln -sF /Users/ajt/projects/amboss-phrasio/dist /Users/ajt/projects/amboss-annotate/node_modules/@amboss-mededu/amboss-phrasio",
-    "linkLocalAdorn": "ln -sF /Users/ajt/projects/adorn/packages/annotate/build /Users/ajt/projects/amboss-annotate/node_modules/@fairfox/adorn",
     "build:local": "dotenv -- cross-var vite build",
     "build": "npm run clean && npm run createTermToIdMap && npm run createIdToPhrasioMap && npm run build:local",
     "run:local": "dotenv -- cross-var vite"
@@ -48,7 +46,7 @@
     "vite": "^2.9.9"
   },
   "dependencies": {
-    "@amboss-mededu/amboss-phrasio": "^0.0.64",
+    "@amboss-mededu/amboss-phrasio": "^0.0.65",
     "@fairfox/adorn": "^1.0.23",
     "@webcomponents/webcomponentsjs": "^2.6.0"
   }
