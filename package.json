@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "@amboss-mededu/amboss-phrasio": "^0.0.65",
-    "@fairfox/adorn": "^1.0.23",
+    "@fairfox/adorn": "^1.0.24",
     "@webcomponents/webcomponentsjs": "^2.6.0"
   }
 }
