@@ -34,8 +34,8 @@ export function normalisePhrasio(phrasioRAW, locale, campaign='') {
         destinations: destinations.map((d) => ({
             label: d.label,
             href: generateHref({
-                particleEid: d.particleEid || '',
-                articleEid: d.articleEid || '',
+                particleEid: d.particleEid || d.anchor || '',
+                articleEid: d.articleEid || d.lc_xid || '',
                 title: phrasioRAW.title || '',
                 locale,
                 campaign,
